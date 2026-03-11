@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>トレーラーハウス 無料見積もり | Park Homes Okinawa</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ocean:#006B8F; --sky:#0099CC; --night:#0A1628; --twilight:#112240;
+  --starlight:#CCD6F6; --muted:#8892B0; --card:#172A45; --border:#1E3A5F;
+  --glow:rgba(0,153,204,0.15); --coral:#E05C3A; --green:#3fb950;
+  --gold:#C9A84C; --sand:#F5EDD6;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--night);color:var(--starlight);min-height:100vh;}
+
+/* ══ HEADER ══ */
+header{background:var(--twilight);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;}
+.logo{width:32px;height:32px;background:linear-gradient(135deg,var(--ocean),var(--sky));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.logo-text .main{font-family:'Shippori Mincho',serif;font-size:14px;font-weight:700;color:#fff;}
+.logo-text .sub{font-size:10px;color:var(--muted);}
+.steps{display:flex;gap:0;margin-left:auto;}
+.step{display:flex;align-items:center;gap:6px;padding:0 14px;font-size:11px;color:var(--muted);border-left:1px solid var(--border);}
+.step.active{color:var(--sky);}
+.step.done{color:var(--green);}
+.step-num{width:20px;height:20px;border-radius:50%;border:1px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;}
+.step.done .step-num{background:var(--green);border-color:var(--green);color:#fff;}
+.step.active .step-num{background:var(--sky);border-color:var(--sky);color:#fff;}
+@media(max-width:600px){.steps{display:none;}}
+
+/* ══ PHASE PANELS ══ */
+.phase{display:none;animation:fadeIn 0.4s ease;}
+.phase.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* ══ PHASE 1: CHAT ══ */
+.chat-wrap{max-width:600px;margin:0 auto;padding:24px 16px;display:flex;flex-direction:column;gap:0;}
+.chat-header{text-align:center;padding:32px 0 24px;}
+.chat-header h1{font-family:'Shippori Mincho',serif;font-size:22px;color:#fff;margin-bottom:8px;}
+.chat-header p{font-size:13px;color:var(--muted);line-height:1.8;}
+.progress-bar{height:3px;background:var(--border);border-radius:2px;margin:0 0 32px;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--ocean),var(--sky));border-radius:2px;transition:width 0.5s ease;}
+.chat-messages{display:flex;flex-direction:column;gap:16px;min-height:200px;}
+.chat-msg{display:flex;gap:10px;align-items:flex-start;animation:msgIn 0.3s ease;}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.chat-msg.bot{flex-direction:row;}
+.chat-msg.user{flex-direction:row-reverse;}
+.chat-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.chat-msg.bot .chat-av{background:linear-gradient(135deg,var(--ocean),var(--sky));}
+.chat-msg.user .chat-av{background:linear-gradient(135deg,#2D5016,#4a7a26);}
+.chat-bubble{padding:11px 15px;border-radius:12px;font-size:14px;line-height:1.7;max-width:80%;}
+.chat-msg.bot .chat-bubble{background:var(--twilight);border:1px solid var(--border);border-radius:4px 12px 12px 12px;}
+.chat-msg.user .chat-bubble{background:var(--card);border:1px solid var(--border);border-radius:12px 4px 12px 12px;}
+.chat-options{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+.opt-btn{background:var(--card);border:1px solid var(--border);color:var(--starlight);padding:9px 16px;border-radius:8px;font-size:13px;font-family:'Noto Sans JP',sans-serif;cursor:pointer;transition:all 0.2s;}
+.opt-btn:hover,.opt-btn.selected{border-color:var(--sky);background:rgba(0,153,204,0.12);color:#fff;}
+.opt-btn.selected{border-color:var(--green);background:rgba(63,185,80,0.1);}
+.chat-input-row{display:flex;gap:8px;margin-top:16px;}
+.chat-input{flex:1;background:var(--twilight);border:1px solid var(--border);color:var(--starlight);padding:10px 14px;border-radius:8px;font-size:14px;font-family:'Noto Sans JP',sans-serif;outline:none;}
+.chat-input:focus{border-color:var(--sky);}
+.chat-next{background:linear-gradient(135deg,var(--ocean),var(--sky));border:none;color:#fff;padding:10px 20px;border-radius:8px;font-size:14px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all 0.2s;white-space:nowrap;}
+.chat-next:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,153,204,0.35);}
+.chat-next:disabled{background:var(--border);cursor:not-allowed;transform:none;box-shadow:none;}
+
+/* ══ PHASE 2: FORM ══ */
+.form-wrap{max-width:860px;margin:0 auto;padding:32px 24px;}
+.form-header{margin-bottom:32px;}
+.form-header h2{font-family:'Shippori Mincho',serif;font-size:20px;color:#fff;margin-bottom:6px;}
+.form-header p{font-size:13px;color:var(--muted);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-group.full{grid-column:1/-1;}
+.form-label{font-size:12px;color:var(--muted);font-weight:500;letter-spacing:0.05em;}
+.form-label .req{color:var(--coral);margin-left:4px;}
+.form-input,.form-select,.form-textarea{background:var(--twilight);border:1px solid var(--border);color:var(--starlight);padding:10px 14px;border-radius:8px;font-size:14px;font-family:'Noto Sans JP',sans-serif;outline:none;width:100%;transition:border-color 0.2s;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--sky);}
+.form-select option{background:var(--twilight);}
+.form-textarea{resize:vertical;min-height:90px;}
+.check-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.check-item{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--card);border:1px solid var(--border);border-radius:6px;cursor:pointer;transition:all 0.2s;font-size:13px;}
+.check-item:hover{border-color:var(--sky);}
+.check-item input[type=checkbox]{accent-color:var(--sky);width:14px;height:14px;}
+.section-title{font-size:12px;font-weight:700;color:var(--sky);letter-spacing:0.1em;text-transform:uppercase;margin:24px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--border);grid-column:1/-1;}
+.price-preview{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-top:24px;}
+.price-preview h3{font-size:13px;color:var(--muted);margin-bottom:12px;}
+.price-rows{display:flex;flex-direction:column;gap:6px;}
+.price-row{display:flex;justify-content:space-between;font-size:13px;}
+.price-row.total{font-size:16px;font-weight:700;color:#fff;padding-top:10px;border-top:1px solid var(--border);margin-top:4px;}
+.price-row .amount{color:var(--sky);}
+.price-row.total .amount{color:var(--gold);}
+.form-actions{display:flex;gap:12px;margin-top:24px;}
+.btn-back{background:none;border:1px solid var(--border);color:var(--muted);padding:12px 24px;border-radius:8px;font-size:14px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all 0.2s;}
+.btn-back:hover{border-color:var(--starlight);color:var(--starlight);}
+.btn-quote{background:linear-gradient(135deg,var(--gold),#e8c06a);border:none;color:var(--night);padding:12px 32px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all 0.2s;margin-left:auto;}
+.btn-quote:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(201,168,76,0.4);}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr;}.check-grid{grid-template-columns:1fr;}}
+
+/* ══ PHASE 3: QUOTE ══ */
+.quote-wrap{max-width:860px;margin:0 auto;padding:32px 24px;}
+.quote-actions{display:flex;gap:12px;margin-bottom:24px;}
+.btn-print{background:linear-gradient(135deg,var(--ocean),var(--sky));border:none;color:#fff;padding:11px 24px;border-radius:8px;font-size:14px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all 0.2s;}
+.btn-print:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,153,204,0.35);}
+.quote-doc{background:#fff;color:#1a1a1a;border-radius:12px;padding:48px;font-family:'Noto Sans JP',sans-serif;box-shadow:0 8px 40px rgba(0,0,0,0.4);}
+.quote-doc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px;padding-bottom:24px;border-bottom:2px solid #006B8F;}
+.company-info .name{font-family:'Shippori Mincho',serif;font-size:20px;font-weight:700;color:#006B8F;margin-bottom:4px;}
+.company-info .detail{font-size:11px;color:#666;line-height:1.8;}
+.quote-meta .title{font-size:28px;font-weight:700;font-family:'Shippori Mincho',serif;color:#1a1a1a;text-align:right;}
+.quote-meta .no{font-size:11px;color:#999;text-align:right;margin-top:4px;}
+.quote-meta .date{font-size:11px;color:#666;text-align:right;}
+.client-section{margin-bottom:32px;}
+.client-section .label{font-size:11px;color:#999;margin-bottom:4px;}
+.client-section .value{font-size:16px;font-weight:700;border-bottom:1px solid #ccc;padding-bottom:4px;display:inline-block;min-width:200px;}
+.quote-table{width:100%;border-collapse:collapse;margin-bottom:24px;}
+.quote-table th{background:#006B8F;color:#fff;padding:10px 14px;font-size:12px;text-align:left;font-weight:500;}
+.quote-table td{padding:12px 14px;border-bottom:1px solid #eee;font-size:13px;vertical-align:top;}
+.quote-table tr:last-child td{border-bottom:none;}
+.quote-table .amount{text-align:right;font-weight:500;}
+.quote-totals{border:1px solid #ddd;border-radius:8px;padding:16px 20px;margin-left:auto;max-width:280px;}
+.quote-total-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;}
+.quote-total-row.grand{font-size:16px;font-weight:700;color:#006B8F;border-top:1px solid #ccc;padding-top:10px;margin-top:6px;}
+.quote-notes{background:#f9f9f9;border-radius:8px;padding:16px 20px;margin-top:24px;}
+.quote-notes h4{font-size:12px;font-weight:700;color:#666;margin-bottom:8px;}
+.quote-notes ul{font-size:11px;color:#666;list-style:none;padding:0;line-height:2;}
+.quote-notes li::before{content:"・";}
+.quote-footer{margin-top:40px;padding-top:16px;border-top:1px solid #eee;font-size:11px;color:#999;text-align:center;}
+.validity-badge{display:inline-block;background:#FFF3CD;border:1px solid #FFC107;color:#856404;padding:4px 12px;border-radius:4px;font-size:11px;margin-top:8px;}
+
+/* ══ PRINT ══ */
+@media print{
+  header,.quote-actions,.btn-back,.phase:not(.active){display:none!important;}
+  body{background:#fff;}
+  .quote-wrap{padding:0;}
+  .quote-doc{box-shadow:none;border-radius:0;padding:20mm;}
+  @page{margin:0;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🏠</div>
+  <div class="logo-text">
+    <div class="main">Park Homes Okinawa</div>
+    <div class="sub">トレーラーハウス見積もりシステム</div>
+  </div>
+  <div class="steps">
+    <div class="step active" id="step1"><div class="step-num">1</div>簡易ヒアリング</div>
+    <div class="step" id="step2"><div class="step-num">2</div>詳細入力</div>
+    <div class="step" id="step3"><div class="step-num">3</div>見積書</div>
+  </div>
+</header>
+
+<!-- ════════════ PHASE 1: CHAT ════════════ -->
+<div class="phase active" id="phase1">
+  <div class="chat-wrap">
+    <div class="chat-header">
+      <h1>無料見積もり</h1>
+      <p>いくつか質問に答えるだけで<br>概算費用をお出しします（約2分）</p>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div id="chatInputArea"></div>
+  </div>
+</div>
+
+<!-- ════════════ PHASE 2: FORM ════════════ -->
+<div class="phase" id="phase2">
+  <div class="form-wrap">
+    <div class="form-header">
+      <h2>詳細見積もり入力</h2>
+      <p>ヒアリング内容を引き継ぎました。詳細を入力して見積書を作成します。</p>
+    </div>
+    <div class="form-grid">
+      <div class="section-title">📋 お客様情報</div>
+      <div class="form-group">
+        <label class="form-label">お名前<span class="req">*</span></label>
+        <input class="form-input" id="f_name" placeholder="山田 太郎">
+      </div>
+      <div class="form-group">
+        <label class="form-label">会社名（任意）</label>
+        <input class="form-input" id="f_company" placeholder="株式会社〇〇">
+      </div>
+      <div class="form-group">
+        <label class="form-label">電話番号</label>
+        <input class="form-input" id="f_tel" placeholder="090-0000-0000" type="tel">
+      </div>
+      <div class="form-group">
+        <label class="form-label">メールアドレス</label>
+        <input class="form-input" id="f_email" placeholder="example@email.com" type="email">
+      </div>
+
+      <div class="section-title">🏠 ご要望内容</div>
+      <div class="form-group">
+        <label class="form-label">用途<span class="req">*</span></label>
+        <select class="form-select" id="f_purpose">
+          <option value="">選択してください</option>
+          <option value="民泊・宿泊施設">民泊・宿泊施設</option>
+          <option value="カフェ・飲食店">カフェ・飲食店</option>
+          <option value="店舗・サロン">店舗・サロン</option>
+          <option value="住居・別荘">住居・別荘</option>
+          <option value="オフィス・事務所">オフィス・事務所</option>
+          <option value="農業利用">農業利用</option>
+          <option value="グランピング">グランピング</option>
+          <option value="その他">その他</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">設置エリア<span class="req">*</span></label>
+        <select class="form-select" id="f_area">
+          <option value="">選択してください</option>
+          <option value="沖縄本島（北部）">沖縄本島（北部）</option>
+          <option value="沖縄本島（中部）">沖縄本島（中部）</option>
+          <option value="沖縄本島（南部）">沖縄本島（南部）</option>
+          <option value="石垣島">石垣島</option>
+          <option value="宮古島">宮古島</option>
+          <option value="久米島">久米島</option>
+          <option value="その他離島">その他離島</option>
+          <option value="県外">県外</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">サイズ</label>
+        <select class="form-select" id="f_size">
+          <option value="S（〜25㎡）">S（〜25㎡）コンパクト</option>
+          <option value="M（25〜40㎡）">M（25〜40㎡）標準</option>
+          <option value="L（40〜60㎡）">L（40〜60㎡）ゆったり</option>
+          <option value="LL（60㎡〜）">LL（60㎡〜）大型</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">予算感</label>
+        <select class="form-select" id="f_budget">
+          <option value="〜500万円">〜500万円</option>
+          <option value="500〜800万円">500〜800万円</option>
+          <option value="800〜1200万円">800〜1200万円</option>
+          <option value="1200万円〜">1200万円〜（フルオーダー）</option>
+          <option value="未定">未定・要相談</option>
+        </select>
+      </div>
+
+      <div class="section-title">⚙️ オプション</div>
+      <div class="form-group full">
+        <label class="form-label">希望オプション（複数選択可）</label>
+        <div class="check-grid">
+          <label class="check-item"><input type="checkbox" value="台風対策強化（タイダウン）"> 台風対策強化（タイダウン）</label>
+          <label class="check-item"><input type="checkbox" value="塩害対応外装材"> 塩害対応外装材</label>
+          <label class="check-item"><input type="checkbox" value="太陽光発電システム"> 太陽光発電システム</label>
+          <label class="check-item"><input type="checkbox" value="断熱グレードアップ"> 断熱グレードアップ</label>
+          <label class="check-item"><input type="checkbox" value="水道・電気工事込み"> 水道・電気工事込み</label>
+          <label class="check-item"><input type="checkbox" value="インテリアコーディネート"> インテリアコーディネート</label>
+          <label class="check-item"><input type="checkbox" value="離島輸送費込み"> 離島輸送費込み</label>
+          <label class="check-item"><input type="checkbox" value="アフターサポート（2年）"> アフターサポート（2年）</label>
+        </div>
+      </div>
+
+      <div class="form-group full">
+        <label class="form-label">備考・ご要望</label>
+        <textarea class="form-textarea" id="f_notes" placeholder="設置場所の状況、デザインのご要望、質問など自由にお書きください"></textarea>
+      </div>
+    </div>
+
+    <!-- 概算プレビュー -->
+    <div class="price-preview">
+      <h3>💰 概算費用プレビュー</h3>
+      <div class="price-rows" id="priceRows">
+        <div class="price-row"><span>本体価格（目安）</span><span class="amount" id="prBase">—</span></div>
+        <div class="price-row"><span>設置工事費</span><span class="amount" id="prInstall">—</span></div>
+        <div class="price-row"><span>輸送費</span><span class="amount" id="prTransport">—</span></div>
+        <div class="price-row"><span>オプション合計</span><span class="amount" id="prOptions">—</span></div>
+        <div class="price-row total"><span>概算合計（税別）</span><span class="amount" id="prTotal">—</span></div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-back" onclick="goPhase(1)">← 戻る</button>
+      <button class="btn-back" onclick="resetAll()" style="border-color:#E05C3A;color:#E05C3A">🔄 最初から</button>
+      <button class="btn-back" onclick="saveForm()" style="border-color:#3fb950;color:#3fb950">💾 一時保存</button>
+      <button class="btn-quote" onclick="goPhase(3)">見積書を作成 →</button>
+    </div>
+    <div id="saveMsg" style="text-align:right;font-size:11px;color:#8892B0;margin-top:8px;"></div>
+  </div>
+</div>
+
+<!-- ════════════ PHASE 3: QUOTE ════════════ -->
+<div class="phase" id="phase3">
+  <div class="quote-wrap">
+    <div class="quote-actions">
+      <button class="btn-back" onclick="goPhase(2)">← 修正する</button>
+      <button class="btn-print" onclick="window.print()">🖨️ 印刷 / PDF保存</button>
+    </div>
+    <div class="quote-doc" id="quoteDoc">
+      <!-- 動的生成 -->
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════
+// データ
+// ════════════════════════════════════════
+const answers = {};
+
+// チャット質問定義
+const questions = [
+  {
+    key: 'purpose',
+    bot: 'こんにちは！Park Homes Okinawaです 🌊\nトレーラーハウスのご利用用途を教えてください。',
+    type: 'options',
+    opts: ['民泊・宿泊施設','カフェ・飲食店','店舗・サロン','住居・別荘','グランピング','農業利用','オフィス','その他']
+  },
+  {
+    key: 'area',
+    bot: 'ありがとうございます！\n設置をご検討のエリアはどちらですか？',
+    type: 'options',
+    opts: ['沖縄本島（北部）','沖縄本島（中部）','沖縄本島（南部）','石垣島','宮古島','久米島','その他離島','県外']
+  },
+  {
+    key: 'size',
+    bot: 'ご希望のサイズ感はいかがでしょうか？',
+    type: 'options',
+    opts: ['S（〜25㎡）コンパクト','M（25〜40㎡）標準','L（40〜60㎡）ゆったり','LL（60㎡〜）大型']
+  },
+  {
+    key: 'budget',
+    bot: 'おおよそのご予算を教えていただけますか？（税別）',
+    type: 'options',
+    opts: ['〜500万円','500〜800万円','800〜1200万円','1200万円〜','未定・要相談']
+  },
+  {
+    key: 'memo',
+    bot: '最後に、特にご要望やご質問があればお聞かせください。\n（なければ「特になし」と入力してください）',
+    type: 'text',
+    placeholder: '例：台風が心配です / 農地に設置したい / できるだけ早く欲しい'
+  }
+];
+
+let currentQ = 0;
+
+// ════════════════════════════════════════
+// チャット制御
+// ════════════════════════════════════════
+function init() {
+  showQuestion(0);
+}
+
+function showQuestion(idx) {
+  if (idx >= questions.length) { finishChat(); return; }
+  const q = questions[idx];
+  const pct = (idx / questions.length) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  setTimeout(() => {
+    addBotMsg(q.bot);
+    setTimeout(() => renderInput(q), 400);
+  }, idx === 0 ? 300 : 100);
+}
+
+function addBotMsg(text) {
+  const c = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg bot';
+  div.innerHTML = `<div class="chat-av">🏠</div><div class="chat-bubble">${text.replace(/\n/g,'<br>')}</div>`;
+  c.appendChild(div);
+  c.scrollTop = c.scrollHeight;
+}
+
+function addUserMsg(text) {
+  const c = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg user';
+  div.innerHTML = `<div class="chat-bubble">${text}</div><div class="chat-av">👤</div>`;
+  c.appendChild(div);
+  c.scrollTop = c.scrollHeight;
+}
+
+function renderInput(q) {
+  const area = document.getElementById('chatInputArea');
+  if (q.type === 'options') {
+    const opts = q.opts.map(o =>
+      `<button class="opt-btn" onclick="selectOpt(this,'${q.key}','${o}')">${o}</button>`
+    ).join('');
+    area.innerHTML = `<div class="chat-options">${opts}</div>`;
+  } else {
+    area.innerHTML = `
+      <div class="chat-input-row">
+        <input class="chat-input" id="chatTextInput" placeholder="${q.placeholder||''}" onkeydown="if(event.key==='Enter')submitText('${q.key}')">
+        <button class="chat-next" onclick="submitText('${q.key}')">次へ →</button>
+      </div>`;
+    setTimeout(() => document.getElementById('chatTextInput')?.focus(), 100);
+  }
+}
+
+function selectOpt(btn, key, val) {
+  document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  answers[key] = val;
+  setTimeout(() => {
+    addUserMsg(val);
+    document.getElementById('chatInputArea').innerHTML = '';
+    currentQ++;
+    setTimeout(() => showQuestion(currentQ), 500);
+  }, 300);
+}
+
+function submitText(key) {
+  const inp = document.getElementById('chatTextInput');
+  const val = (inp?.value || '').trim() || '特になし';
+  answers[key] = val;
+  addUserMsg(val);
+  document.getElementById('chatInputArea').innerHTML = '';
+  currentQ++;
+  setTimeout(() => showQuestion(currentQ), 500);
+}
+
+function finishChat() {
+  document.getElementById('progressFill').style.width = '100%';
+  addBotMsg('ありがとうございます！✨\n内容を引き継いで詳細見積もりフォームへ進みます。');
+  setTimeout(() => {
+    prefillForm();
+    goPhase(2);
+  }, 1500);
+}
+
+// ════════════════════════════════════════
+// フォームへデータ引き継ぎ
+// ════════════════════════════════════════
+function prefillForm() {
+  const purposeMap = {
+    '民泊・宿泊施設':'民泊・宿泊施設','カフェ・飲食店':'カフェ・飲食店',
+    '店舗・サロン':'店舗・サロン','住居・別荘':'住居・別荘',
+    'グランピング':'グランピング','農業利用':'農業利用',
+    'オフィス':'オフィス・事務所','その他':'その他'
+  };
+  const areaMap = {
+    '沖縄本島（北部）':'沖縄本島（北部）','沖縄本島（中部）':'沖縄本島（中部）',
+    '沖縄本島（南部）':'沖縄本島（南部）','石垣島':'石垣島','宮古島':'宮古島',
+    '久米島':'久米島','その他離島':'その他離島','県外':'県外'
+  };
+  const sizeMap = {
+    'S（〜25㎡）コンパクト':'S（〜25㎡）','M（25〜40㎡）標準':'M（25〜40㎡）',
+    'L（40〜60㎡）ゆったり':'L（40〜60㎡）','LL（60㎡〜）大型':'LL（60㎡〜）'
+  };
+
+  setSelect('f_purpose', purposeMap[answers.purpose] || answers.purpose);
+  setSelect('f_area', areaMap[answers.area] || answers.area);
+
+  const sizeKey = Object.keys(sizeMap).find(k => answers.size && answers.size.startsWith(k.slice(0,3)));
+  if (sizeKey) setSelect('f_size', answers.size);
+
+  if (answers.budget) setSelect('f_budget', answers.budget.replace('・要相談',''));
+  if (answers.memo && answers.memo !== '特になし') {
+    document.getElementById('f_notes').value = answers.memo;
+  }
+
+  updatePrice();
+
+  // フォーム変更時にリアルタイム更新
+  ['f_size','f_area','f_budget'].forEach(id => {
+    document.getElementById(id)?.addEventListener('change', updatePrice);
+  });
+  document.querySelectorAll('.check-item input').forEach(cb => {
+    cb.addEventListener('change', updatePrice);
+  });
+}
+
+function setSelect(id, val) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  for (let o of el.options) {
+    if (o.value.includes(val) || val.includes(o.value.slice(0,4))) {
+      o.selected = true; break;
+    }
+  }
+}
+
+// ════════════════════════════════════════
+// 概算計算
+// ════════════════════════════════════════
+const PRICE = {
+  base: { 'S（〜25㎡）':400, 'M（25〜40㎡）':650, 'L（40〜60㎡）':900, 'LL（60㎡〜）':1200 },
+  install: 80,
+  transport: { '沖縄本島':30, '石垣島':120, '宮古島':110, '久米島':90, '離島':100, '県外':150, 'default':50 },
+  options: {
+    '台風対策強化（タイダウン）':25, '塩害対応外装材':30, '太陽光発電システム':80,
+    '断熱グレードアップ':20, '水道・電気工事込み':60, 'インテリアコーディネート':40,
+    '離島輸送費込み':0, 'アフターサポート（2年）':15
+  }
+};
+
+function updatePrice() {
+  const size    = document.getElementById('f_size')?.value || '';
+  const area    = document.getElementById('f_area')?.value || '';
+  const budget  = document.getElementById('f_budget')?.value || '';
+
+  const sizeKey = Object.keys(PRICE.base).find(k => size.includes(k.slice(0,3))) || 'M（25〜40㎡）';
+  const base    = PRICE.base[sizeKey] || 650;
+  const install = PRICE.install;
+
+  let transport = PRICE.transport.default;
+  if (area.includes('石垣')) transport = PRICE.transport['石垣島'];
+  else if (area.includes('宮古')) transport = PRICE.transport['宮古島'];
+  else if (area.includes('久米')) transport = PRICE.transport['久米島'];
+  else if (area.includes('離島')) transport = PRICE.transport['離島'];
+  else if (area.includes('県外')) transport = PRICE.transport['県外'];
+  else if (area.includes('沖縄')) transport = PRICE.transport['沖縄本島'];
+
+  let optTotal = 0;
+  document.querySelectorAll('.check-item input:checked').forEach(cb => {
+    optTotal += PRICE.options[cb.value] || 0;
+  });
+
+  const total = base + install + transport + optTotal;
+
+  const fmt = n => n + '万円';
+  document.getElementById('prBase').textContent = fmt(base);
+  document.getElementById('prInstall').textContent = fmt(install);
+  document.getElementById('prTransport').textContent = fmt(transport);
+  document.getElementById('prOptions').textContent = optTotal > 0 ? fmt(optTotal) : '0万円';
+  document.getElementById('prTotal').textContent = `約${total}万円〜`;
+}
+
+// ════════════════════════════════════════
+// 見積書生成
+// ════════════════════════════════════════
+function buildQuote() {
+  const name     = document.getElementById('f_name').value || 'お客様';
+  const company  = document.getElementById('f_company').value;
+  const purpose  = document.getElementById('f_purpose').value;
+  const area     = document.getElementById('f_area').value;
+  const size     = document.getElementById('f_size').value;
+  const budget   = document.getElementById('f_budget').value;
+  const notes    = document.getElementById('f_notes').value;
+
+  const sizeKey  = Object.keys(PRICE.base).find(k => size.includes(k.slice(0,3))) || 'M（25〜40㎡）';
+  const base     = PRICE.base[sizeKey] || 650;
+  const install  = PRICE.install;
+
+  let transport = PRICE.transport.default;
+  if (area.includes('石垣')) transport = PRICE.transport['石垣島'];
+  else if (area.includes('宮古')) transport = PRICE.transport['宮古島'];
+  else if (area.includes('久米')) transport = PRICE.transport['久米島'];
+  else if (area.includes('離島')) transport = PRICE.transport['離島'];
+  else if (area.includes('県外')) transport = PRICE.transport['県外'];
+  else if (area.includes('沖縄')) transport = PRICE.transport['沖縄本島'];
+
+  const opts = [];
+  document.querySelectorAll('.check-item input:checked').forEach(cb => {
+    opts.push({ name: cb.value, price: PRICE.options[cb.value] || 0 });
+  });
+  const optTotal = opts.reduce((s, o) => s+o.price, 0);
+  const subtotal = base + install + transport + optTotal;
+  const tax      = Math.round(subtotal * 0.1);
+  const total    = subtotal + tax;
+
+  const today    = new Date();
+  const dateStr  = `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
+  const noStr    = `PH-${today.getFullYear()}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}-${String(Math.floor(Math.random()*9000)+1000)}`;
+
+  const optRows = opts.map(o =>
+    `<tr><td>　${o.name}</td><td></td><td class="amount">${o.price}万円〜</td></tr>`
+  ).join('');
+
+  document.getElementById('quoteDoc').innerHTML = `
+    <div class="quote-doc-header">
+      <div class="company-info">
+        <div class="name">Park Homes Okinawa</div>
+        <div class="detail">
+          トレーラーハウス製造・販売<br>
+          沖縄県〇〇市〇〇町1-1-1<br>
+          TEL: 098-000-0000<br>
+          park-homes-okinawa.jp
+        </div>
+      </div>
+      <div class="quote-meta">
+        <div class="title">御 見 積 書</div>
+        <div class="no">見積番号：${noStr}</div>
+        <div class="date">発行日：${dateStr}</div>
+        <div class="date">有効期限：発行日より30日間</div>
+      </div>
+    </div>
+
+    <div class="client-section">
+      <div class="label">お見積先</div>
+      <div class="value">${company ? company + '　' : ''}${name} 様</div>
+    </div>
+
+    <p style="font-size:13px;margin-bottom:20px;line-height:1.8;">
+      下記の通りお見積もり申し上げます。<br>
+      ※本見積もりは概算です。現地確認・詳細仕様確定後に正式見積もりをご提出いたします。
+    </p>
+
+    <table class="quote-table">
+      <thead>
+        <tr><th>項目</th><th>仕様</th><th style="text-align:right">金額（目安・税別）</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>トレーラーハウス本体</td><td>${sizeKey}・${purpose}用途</td><td class="amount">${base}万円〜</td></tr>
+        <tr><td>設置工事費</td><td>基礎・アンカー・搬入</td><td class="amount">${install}万円〜</td></tr>
+        <tr><td>輸送費</td><td>${area}</td><td class="amount">${transport}万円〜</td></tr>
+        ${opts.length ? `<tr><td colspan="3" style="font-size:12px;color:#666;padding:6px 14px;">【オプション】</td></tr>${optRows}` : ''}
+      </tbody>
+    </table>
+
+    <div class="quote-totals">
+      <div class="quote-total-row"><span>小計（税別）</span><span>${subtotal}万円〜</span></div>
+      <div class="quote-total-row"><span>消費税（10%）</span><span>約${tax}万円</span></div>
+      <div class="quote-total-row grand"><span>合計（税込）</span><span>約${total}万円〜</span></div>
+    </div>
+
+    <div class="quote-notes">
+      <h4>注意事項・備考</h4>
+      <ul>
+        <li>本見積もりは概算金額です。詳細仕様・現地状況により変動します</li>
+        <li>電気・水道の引き込み工事は別途お見積もりとなります（工事込みオプション除く）</li>
+        <li>農地・市街化調整区域への設置は事前に行政確認が必要です</li>
+        <li>離島輸送は天候・航路状況により納期が変動する場合があります</li>
+        ${notes ? `<li>ご要望：${notes}</li>` : ''}
+      </ul>
+    </div>
+
+    <div class="quote-footer">
+      Park Homes Okinawa　｜　ご不明な点はお気軽にお問い合わせください<br>
+      <span class="validity-badge">この見積書の有効期限は発行日より30日間です</span>
+    </div>
+  `;
+}
+
+// ════════════════════════════════════════
+// フェーズ切り替え
+// ════════════════════════════════════════
+function goPhase(n) {
+  document.querySelectorAll('.phase').forEach((p,i) => {
+    p.classList.toggle('active', i+1 === n);
+  });
+  document.querySelectorAll('.step').forEach((s,i) => {
+    s.classList.remove('active','done');
+    if (i+1 < n) s.classList.add('done');
+    if (i+1 === n) s.classList.add('active');
+  });
+  if (n === 3) buildQuote();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ════════════════════════════════════════
+// 最初から / 一時保存 / 復元
+// ════════════════════════════════════════
+function resetAll() {
+  if (!confirm('入力内容をリセットして最初からやり直しますか？')) return;
+  Object.keys(answers).forEach(k => delete answers[k]);
+  currentQ = 0;
+  document.getElementById('chatMessages').innerHTML = '';
+  document.getElementById('chatInputArea').innerHTML = '';
+  document.getElementById('progressFill').style.width = '0%';
+  goPhase(1);
+  setTimeout(() => showQuestion(0), 300);
+}
+
+function saveForm() {
+  const data = {
+    answers,
+    form: {
+      name:    document.getElementById('f_name').value,
+      company: document.getElementById('f_company').value,
+      tel:     document.getElementById('f_tel').value,
+      email:   document.getElementById('f_email').value,
+      purpose: document.getElementById('f_purpose').value,
+      area:    document.getElementById('f_area').value,
+      size:    document.getElementById('f_size').value,
+      budget:  document.getElementById('f_budget').value,
+      notes:   document.getElementById('f_notes').value,
+      options: [...document.querySelectorAll('.check-item input:checked')].map(cb => cb.value),
+    },
+    savedAt: new Date().toLocaleString('ja-JP')
+  };
+  try {
+    sessionStorage.setItem('parkHomesDraft', JSON.stringify(data));
+    const msg = document.getElementById('saveMsg');
+    msg.textContent = '✅ ' + data.savedAt + ' に保存しました（このセッション中有効）';
+    msg.style.color = '#3fb950';
+    setTimeout(() => { msg.style.color = '#8892B0'; }, 3000);
+  } catch(e) {
+    alert('保存に失敗しました');
+  }
+}
+
+function restoreForm() {
+  try {
+    const raw = sessionStorage.getItem('parkHomesDraft');
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    if (data.answers) Object.assign(answers, data.answers);
+    const f = data.form || {};
+    const set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+    set('f_name', f.name); set('f_company', f.company);
+    set('f_tel', f.tel);   set('f_email', f.email);
+    set('f_purpose', f.purpose); set('f_area', f.area);
+    set('f_size', f.size); set('f_budget', f.budget);
+    set('f_notes', f.notes);
+    if (f.options) {
+      document.querySelectorAll('.check-item input').forEach(cb => {
+        cb.checked = f.options.includes(cb.value);
+      });
+    }
+    const msg = document.getElementById('saveMsg');
+    if (msg) {
+      msg.textContent = '📂 ' + data.savedAt + ' の保存データを復元しました';
+      msg.style.color = '#0099CC';
+    }
+    return true;
+  } catch(e) { return false; }
+}
+
+init();
+</script>
+</body>
+</html>

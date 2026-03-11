@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Park Homes Okinawa｜トレーラーハウス 沖縄</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Zen+Kaku+Gothic+New:wght@400;700;900&family=Shippori+Mincho:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════ */
+:root {
+  --sea-deep:   #005F8A;
+  --sea:        #0094C6;
+  --sea-light:  #33B5E5;
+  --sky:        #87CEEB;
+  --foam:       #E8F7FC;
+  --white:      #FFFFFF;
+  --sand:       #FFF8EE;
+  --coral:      #FF6B4A;
+  --coral-light:#FF8F74;
+  --mangrove:   #2D7A4F;
+  --text:       #1A2E3B;
+  --text-mid:   #4A6575;
+  --text-light: #7A95A5;
+  --border:     #D4EAF5;
+  --gold:       #E8A020;
+  --shadow:     rgba(0,94,138,0.12);
+}
+
+/* ═══════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Noto Sans JP',sans-serif;color:var(--text);background:var(--white);overflow-x:hidden;}
+a{text-decoration:none;color:inherit;}
+img{max-width:100%;}
+
+/* ═══════════════════════════════════════
+   HEADER
+═══════════════════════════════════════ */
+header{
+  position:sticky;top:0;z-index:200;
+  background:rgba(255,255,255,0.95);
+  backdrop-filter:blur(12px);
+  border-bottom:2px solid var(--sea);
+  box-shadow:0 2px 20px var(--shadow);
+}
+.header-inner{
+  max-width:1180px;margin:0 auto;
+  display:flex;align-items:center;gap:0;
+  height:64px;padding:0 24px;
+}
+.header-logo{display:flex;align-items:center;gap:10px;margin-right:auto;}
+.header-logo .mark{
+  width:40px;height:40px;
+  background:linear-gradient(135deg,var(--sea-deep),var(--sea-light));
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:20px;box-shadow:0 3px 10px var(--shadow);
+}
+.header-logo .name{font-family:'Zen Kaku Gothic New',sans-serif;font-size:15px;font-weight:900;color:var(--sea-deep);line-height:1.2;}
+.header-logo .sub{font-size:9px;color:var(--text-light);letter-spacing:0.08em;}
+nav{display:flex;gap:0;}
+nav a{
+  padding:0 16px;height:64px;display:flex;align-items:center;
+  font-size:13px;font-weight:500;color:var(--text-mid);
+  border-bottom:3px solid transparent;transition:all 0.2s;white-space:nowrap;
+}
+nav a:hover{color:var(--sea);border-bottom-color:var(--sea);}
+.header-tel{display:flex;flex-direction:column;align-items:flex-end;margin-left:16px;}
+.header-tel .num{font-size:18px;font-weight:900;color:var(--sea-deep);letter-spacing:0.05em;}
+.header-tel .hours{font-size:10px;color:var(--text-light);}
+.header-cta{
+  margin-left:12px;
+  background:linear-gradient(135deg,var(--coral),var(--coral-light));
+  color:#fff;padding:10px 18px;border-radius:8px;
+  font-size:12px;font-weight:700;white-space:nowrap;
+  box-shadow:0 3px 10px rgba(255,107,74,0.35);
+  transition:all 0.2s;
+}
+.header-cta:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(255,107,74,0.4);}
+
+/* ═══════════════════════════════════════
+   HERO
+═══════════════════════════════════════ */
+.hero{
+  position:relative;
+  background:linear-gradient(160deg, #005F8A 0%, #0094C6 40%, #33B5E5 70%, #87CEEB 100%);
+  min-height:560px;overflow:hidden;
+  display:flex;align-items:center;
+}
+.hero-bg-circles{position:absolute;inset:0;overflow:hidden;}
+.hero-bg-circles span{
+  position:absolute;border-radius:50%;
+  background:rgba(255,255,255,0.06);
+  animation:float 8s ease-in-out infinite;
+}
+.hero-bg-circles span:nth-child(1){width:500px;height:500px;top:-100px;right:-100px;animation-delay:0s;}
+.hero-bg-circles span:nth-child(2){width:300px;height:300px;bottom:-50px;left:10%;animation-delay:2s;}
+.hero-bg-circles span:nth-child(3){width:200px;height:200px;top:50px;left:30%;animation-delay:4s;}
+@keyframes float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-20px) scale(1.05)}}
+
+.hero-wave{
+  position:absolute;bottom:0;left:0;right:0;
+  height:80px;overflow:hidden;
+}
+.hero-wave svg{display:block;width:100%;height:100%;}
+
+.hero-inner{
+  max-width:1180px;margin:0 auto;padding:60px 24px 100px;
+  display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;
+  position:relative;z-index:2;width:100%;
+}
+.hero-text{color:#fff;}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,0.2);
+  border:1px solid rgba(255,255,255,0.4);
+  padding:5px 14px;border-radius:20px;
+  font-size:11px;font-weight:700;letter-spacing:0.12em;
+  margin-bottom:20px;
+}
+.hero-text h1{
+  font-family:'Zen Kaku Gothic New',sans-serif;
+  font-size:42px;font-weight:900;line-height:1.3;
+  margin-bottom:20px;
+  text-shadow:0 2px 20px rgba(0,0,0,0.2);
+}
+.hero-text h1 em{
+  display:block;font-style:normal;
+  color:#FFE566;font-size:48px;
+}
+.hero-text p{font-size:15px;line-height:1.9;opacity:0.9;margin-bottom:28px;}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;}
+.btn-hero-main{
+  background:#fff;color:var(--sea-deep);
+  padding:14px 28px;border-radius:10px;
+  font-size:14px;font-weight:700;
+  box-shadow:0 4px 16px rgba(0,0,0,0.15);
+  transition:all 0.2s;
+}
+.btn-hero-main:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.2);}
+.btn-hero-sub{
+  background:rgba(255,255,255,0.15);
+  border:2px solid rgba(255,255,255,0.6);
+  color:#fff;padding:14px 28px;border-radius:10px;
+  font-size:14px;font-weight:700;transition:all 0.2s;
+}
+.btn-hero-sub:hover{background:rgba(255,255,255,0.25);}
+
+/* Hero右：実績カード */
+.hero-cards{display:flex;flex-direction:column;gap:12px;}
+.hero-stat-card{
+  background:rgba(255,255,255,0.15);
+  backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,0.3);
+  border-radius:14px;padding:16px 22px;
+  display:flex;align-items:center;gap:16px;
+  animation:slideIn 0.6s ease both;
+}
+.hero-stat-card:nth-child(1){animation-delay:0.1s;}
+.hero-stat-card:nth-child(2){animation-delay:0.2s;}
+.hero-stat-card:nth-child(3){animation-delay:0.3s;}
+@keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+.stat-icon{font-size:32px;width:48px;text-align:center;}
+.stat-text .num{font-size:24px;font-weight:900;color:#fff;font-family:'Zen Kaku Gothic New',sans-serif;}
+.stat-text .num span{font-size:14px;margin-left:2px;}
+.stat-text .label{font-size:11px;color:rgba(255,255,255,0.8);}
+
+/* ═══════════════════════════════════════
+   SERVICES（4カード）
+═══════════════════════════════════════ */
+.services{background:var(--sand);padding:72px 24px;}
+.section-head{text-align:center;margin-bottom:48px;}
+.section-head .en{
+  font-size:11px;font-weight:700;letter-spacing:0.2em;
+  color:var(--sea);text-transform:uppercase;margin-bottom:8px;
+}
+.section-head h2{
+  font-family:'Zen Kaku Gothic New',sans-serif;
+  font-size:28px;font-weight:900;color:var(--text);
+  margin-bottom:10px;
+}
+.section-head p{font-size:14px;color:var(--text-light);line-height:1.8;}
+
+.services-grid{
+  max-width:1100px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(2,1fr);gap:20px;
+}
+.svc-card{
+  background:#fff;border-radius:16px;overflow:hidden;
+  box-shadow:0 4px 24px var(--shadow);
+  transition:all 0.3s;display:flex;flex-direction:column;
+}
+.svc-card:hover{transform:translateY(-6px);box-shadow:0 12px 40px rgba(0,94,138,0.18);}
+.svc-img{
+  height:160px;display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;font-size:64px;
+}
+.svc-img.blue   {background:linear-gradient(135deg,#005F8A,#33B5E5);}
+.svc-img.coral  {background:linear-gradient(135deg,#FF6B4A,#FF9D7E);}
+.svc-img.green  {background:linear-gradient(135deg,#2D7A4F,#5AAF7A);}
+.svc-img.gold   {background:linear-gradient(135deg,#B8860B,#E8A020);}
+.svc-img .wave-pattern{
+  position:absolute;bottom:0;left:0;right:0;
+  height:40px;opacity:0.2;
+}
+.svc-body{padding:22px 24px 20px;flex:1;display:flex;flex-direction:column;}
+.svc-tag{
+  display:inline-block;font-size:10px;font-weight:700;
+  letter-spacing:0.1em;padding:3px 10px;border-radius:20px;
+  margin-bottom:10px;
+}
+.tag-blue  {background:#E0F2FB;color:var(--sea-deep);}
+.tag-coral {background:#FFF0EC;color:var(--coral);}
+.tag-green {background:#E8F5EE;color:var(--mangrove);}
+.tag-gold  {background:#FFF8E0;color:#B8860B;}
+.svc-body h3{
+  font-family:'Zen Kaku Gothic New',sans-serif;
+  font-size:17px;font-weight:900;color:var(--text);
+  margin-bottom:8px;line-height:1.4;
+}
+.svc-body h3 em{font-style:normal;color:var(--sea);}
+.svc-body p{font-size:13px;color:var(--text-mid);line-height:1.8;flex:1;margin-bottom:16px;}
+.svc-btn{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 18px;border-radius:8px;
+  font-size:13px;font-weight:700;transition:all 0.2s;
+}
+.svc-btn.btn-blue  {background:var(--sea);color:#fff;}
+.svc-btn.btn-coral {background:var(--coral);color:#fff;}
+.svc-btn.btn-green {background:var(--mangrove);color:#fff;}
+.svc-btn.btn-gold  {background:var(--gold);color:#fff;}
+.svc-btn:hover{opacity:0.9;transform:translateX(3px);}
+.svc-btn .arrow{font-size:18px;}
+
+/* ═══════════════════════════════════════
+   AI FEATURES BANNER
+═══════════════════════════════════════ */
+.ai-banner{
+  background:linear-gradient(135deg,var(--sea-deep) 0%, #003D5C 100%);
+  padding:60px 24px;position:relative;overflow:hidden;
+}
+.ai-banner::before{
+  content:'';position:absolute;top:-50%;right:-10%;
+  width:600px;height:600px;border-radius:50%;
+  background:rgba(255,255,255,0.03);
+}
+.ai-banner-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:32px;position:relative;z-index:1;}
+.ai-card{
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:16px;padding:28px;
+  transition:all 0.3s;cursor:pointer;
+}
+.ai-card:hover{background:rgba(255,255,255,0.14);transform:translateY(-4px);}
+.ai-card-icon{font-size:40px;margin-bottom:14px;}
+.ai-card h3{
+  font-family:'Zen Kaku Gothic New',sans-serif;
+  font-size:18px;font-weight:900;color:#fff;margin-bottom:8px;
+}
+.ai-card p{font-size:13px;color:rgba(255,255,255,0.7);line-height:1.8;margin-bottom:18px;}
+.ai-card-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);
+  color:#fff;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:700;
+  transition:all 0.2s;
+}
+.ai-card:hover .ai-card-btn{background:rgba(255,255,255,0.25);}
+.ai-badge{
+  display:inline-block;background:#FFE566;color:var(--sea-deep);
+  padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;margin-left:8px;
+}
+
+/* ═══════════════════════════════════════
+   FEATURES（特徴）
+═══════════════════════════════════════ */
+.features{padding:72px 24px;background:#fff;}
+.features-inner{max-width:1100px;margin:0 auto;}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px;}
+.feat-card{
+  border:1px solid var(--border);border-radius:14px;padding:28px 24px;
+  text-align:center;transition:all 0.3s;
+}
+.feat-card:hover{border-color:var(--sea-light);box-shadow:0 6px 24px var(--shadow);}
+.feat-icon{
+  width:64px;height:64px;border-radius:50%;
+  background:linear-gradient(135deg,var(--foam),var(--border));
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;margin:0 auto 16px;
+}
+.feat-card h3{font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.feat-card p{font-size:13px;color:var(--text-mid);line-height:1.8;}
+.feat-card .tag{
+  display:inline-block;margin-top:12px;
+  background:var(--foam);color:var(--sea);
+  padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;
+}
+
+/* ═══════════════════════════════════════
+   FAQ
+═══════════════════════════════════════ */
+.faq{background:var(--foam);padding:72px 24px;}
+.faq-inner{max-width:900px;margin:0 auto;}
+.faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:40px;}
+.faq-item{
+  background:#fff;border:1px solid var(--border);border-radius:10px;
+  padding:14px 18px;cursor:pointer;transition:all 0.2s;
+  display:flex;align-items:center;gap:10px;
+}
+.faq-item:hover{border-color:var(--sea-light);background:var(--foam);}
+.faq-q{font-size:12px;color:var(--sea);font-weight:700;margin-right:4px;flex-shrink:0;}
+.faq-text{font-size:13px;color:var(--text);}
+.faq-more{
+  text-align:center;margin-top:28px;
+}
+.btn-faq-more{
+  display:inline-flex;align-items:center;gap:8px;
+  border:2px solid var(--sea);color:var(--sea);
+  padding:12px 28px;border-radius:8px;font-size:14px;font-weight:700;
+  transition:all 0.2s;
+}
+.btn-faq-more:hover{background:var(--sea);color:#fff;}
+
+/* ═══════════════════════════════════════
+   CTA
+═══════════════════════════════════════ */
+.cta{
+  background:linear-gradient(135deg,#FF6B4A,#FF9D7E);
+  padding:72px 24px;text-align:center;position:relative;overflow:hidden;
+}
+.cta::before{
+  content:'🌺';font-size:200px;opacity:0.08;
+  position:absolute;right:-20px;top:50%;transform:translateY(-50%);
+}
+.cta h2{
+  font-family:'Zen Kaku Gothic New',sans-serif;
+  font-size:30px;font-weight:900;color:#fff;margin-bottom:12px;
+}
+.cta p{font-size:15px;color:rgba(255,255,255,0.9);margin-bottom:32px;line-height:1.8;}
+.cta-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+.btn-cta-white{
+  background:#fff;color:var(--coral);padding:16px 36px;
+  border-radius:10px;font-size:15px;font-weight:700;
+  box-shadow:0 4px 16px rgba(0,0,0,0.15);transition:all 0.2s;
+}
+.btn-cta-white:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.2);}
+.btn-cta-outline{
+  background:rgba(255,255,255,0.15);
+  border:2px solid rgba(255,255,255,0.7);
+  color:#fff;padding:16px 36px;border-radius:10px;
+  font-size:15px;font-weight:700;transition:all 0.2s;
+}
+.btn-cta-outline:hover{background:rgba(255,255,255,0.25);}
+
+/* ═══════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════ */
+footer{background:var(--sea-deep);color:rgba(255,255,255,0.8);padding:48px 24px 24px;}
+.footer-inner{max-width:1100px;margin:0 auto;}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;margin-bottom:40px;}
+.footer-brand .name{
+  font-family:'Zen Kaku Gothic New',sans-serif;
+  font-size:18px;font-weight:900;color:#fff;margin-bottom:8px;
+}
+.footer-brand p{font-size:12px;line-height:1.9;opacity:0.7;}
+.footer-tel{font-size:22px;font-weight:900;color:#fff;margin-top:12px;}
+.footer-hours{font-size:11px;opacity:0.6;}
+.footer-nav h4{font-size:12px;font-weight:700;color:#fff;margin-bottom:14px;letter-spacing:0.1em;}
+.footer-nav a{display:block;font-size:12px;margin-bottom:8px;opacity:0.7;transition:opacity 0.2s;}
+.footer-nav a:hover{opacity:1;}
+.footer-bottom{border-top:1px solid rgba(255,255,255,0.1);padding-top:20px;display:flex;justify-content:space-between;align-items:center;}
+.footer-bottom p{font-size:11px;opacity:0.5;}
+
+/* ═══════════════════════════════════════
+   FLOATING WIDGETS
+═══════════════════════════════════════ */
+.floating-widgets{
+  position:fixed;bottom:24px;right:24px;
+  display:flex;flex-direction:column;gap:10px;z-index:300;
+}
+.fw-btn{
+  width:58px;height:58px;border-radius:50%;border:none;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;box-shadow:0 4px 20px rgba(0,0,0,0.25);
+  transition:all 0.3s;position:relative;
+}
+.fw-btn:hover{transform:scale(1.12);}
+.fw-btn .fw-icon{font-size:22px;line-height:1;}
+.fw-btn .fw-label{font-size:8px;margin-top:2px;line-height:1;}
+.fw-chat{background:linear-gradient(135deg,var(--sea-deep),var(--sea-light));color:#fff;}
+.fw-estimate{background:linear-gradient(135deg,var(--coral),#FF9D7E);color:#fff;}
+.fw-tel{background:linear-gradient(135deg,var(--mangrove),#5AAF7A);color:#fff;}
+.fw-pulse{
+  position:absolute;top:-3px;right:-3px;
+  width:14px;height:14px;border-radius:50%;background:#FFE566;
+  animation:fw-pulse 1.5s ease-in-out infinite;
+}
+@keyframes fw-pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:0.5}}
+
+/* ═══════════════════════════════════════
+   MODAL（chatbot & estimate）
+═══════════════════════════════════════ */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.6);
+  z-index:400;display:none;align-items:center;justify-content:center;
+  animation:fadeOverlay 0.2s ease;
+}
+.modal-overlay.open{display:flex;}
+@keyframes fadeOverlay{from{opacity:0}to{opacity:1}}
+.modal-box{
+  background:#fff;border-radius:20px;overflow:hidden;
+  width:min(92vw,520px);max-height:85vh;
+  display:flex;flex-direction:column;
+  box-shadow:0 20px 60px rgba(0,0,0,0.3);
+  animation:modalUp 0.3s ease;
+}
+@keyframes modalUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+.modal-header{
+  background:linear-gradient(135deg,var(--sea-deep),var(--sea-light));
+  color:#fff;padding:16px 20px;
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
+}
+.modal-header .icon{font-size:22px;}
+.modal-header .title{font-family:'Zen Kaku Gothic New',sans-serif;font-size:16px;font-weight:900;flex:1;}
+.modal-close{
+  width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.2);
+  border:none;color:#fff;font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:background 0.2s;
+}
+.modal-close:hover{background:rgba(255,255,255,0.35);}
+.modal-body{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.modal-iframe{width:100%;height:600px;border:none;}
+.modal-notice{
+  padding:12px 18px;background:var(--foam);
+  border-top:1px solid var(--border);
+  font-size:11px;color:var(--text-light);text-align:center;flex-shrink:0;
+}
+
+/* ═══════════════════════════════════════
+   SCROLL ANIMATIONS
+═══════════════════════════════════════ */
+.reveal{opacity:0;transform:translateY(24px);transition:all 0.6s ease;}
+.reveal.visible{opacity:1;transform:none;}
+.reveal-delay-1{transition-delay:0.1s;}
+.reveal-delay-2{transition-delay:0.2s;}
+.reveal-delay-3{transition-delay:0.3s;}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════ */
+@media(max-width:900px){
+  nav{display:none;}
+  .header-tel{display:none;}
+  .hero-inner{grid-template-columns:1fr;gap:32px;}
+  .hero-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+  .hero-stat-card{flex-direction:column;text-align:center;gap:6px;}
+  .hero-text h1{font-size:30px;}
+  .hero-text h1 em{font-size:36px;}
+  .services-grid{grid-template-columns:1fr;}
+  .ai-banner-inner{grid-template-columns:1fr;}
+  .features-grid{grid-template-columns:1fr 1fr;}
+  .faq-grid{grid-template-columns:1fr;}
+  .footer-top{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:600px){
+  .hero{min-height:auto;}
+  .hero-inner{padding:40px 16px 80px;}
+  .hero-cards{grid-template-columns:1fr;}
+  .hero-btns{flex-direction:column;}
+  .btn-hero-main,.btn-hero-sub{text-align:center;}
+  .features-grid{grid-template-columns:1fr;}
+  .footer-top{grid-template-columns:1fr;}
+  .footer-bottom{flex-direction:column;gap:8px;text-align:center;}
+  .cta-btns{flex-direction:column;align-items:center;}
+}
+
+@media print{.floating-widgets,.modal-overlay{display:none!important;}}
+</style>
+</head>
+<body>
+
+<!-- ══════════ HEADER ══════════ -->
+<header>
+  <div class="header-inner">
+    <div class="header-logo">
+      <div class="mark">🏠</div>
+      <div>
+        <div class="name">Park Homes Okinawa</div>
+        <div class="sub">トレーラーハウス製造・販売・設置</div>
+      </div>
+    </div>
+    <nav>
+      <a href="#services">トレーラーハウス一覧</a>
+      <a href="#services">用途別一覧</a>
+      <a href="#features">設置実績</a>
+      <a href="#faq">よくある質問</a>
+      <a href="#footer">会社概要</a>
+    </nav>
+    <div class="header-tel">
+      <div class="num"><span style="display:inline-flex;align-items:center;gap:4px;white-space:nowrap;">📞&nbsp;098-856-6666</span></div>
+      <div class="hours">受付時間：9:00〜18:00（土日祝休）</div>
+    </div>
+    <a href="#" class="header-cta" onclick="openModal('estimate');return false;">
+      トレーラーハウスをご検討中の方へ →
+    </a>
+  </div>
+</header>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hero">
+  <div class="hero-bg-circles">
+    <span></span><span></span><span></span>
+  </div>
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-tag">🌺 沖縄のトレーラーハウス専門メーカー</div>
+      <h1>
+        夢の場所に、<em>自由な家を。</em>
+      </h1>
+      <p>固定資産税なし・建築確認不要・移動できる家。<br>
+      沖縄の海と風を感じながら、あなただけの<br>
+      トレーラーハウスライフをはじめませんか。</p>
+      <div class="hero-btns">
+        <a href="#" class="btn-hero-main" onclick="openModal('estimate');return false;">🏷️ 無料見積もりを依頼する</a>
+        <a href="#" class="btn-hero-sub" onclick="openModal('chatbot');return false;">💬 AIに質問する</a>
+      </div>
+    </div>
+    <div class="hero-cards">
+      <div class="hero-stat-card">
+        <div class="stat-icon">🏆</div>
+        <div class="stat-text">
+          <div class="num">500<span>棟以上</span></div>
+          <div class="label">設置実績</div>
+        </div>
+      </div>
+      <div class="hero-stat-card">
+        <div class="stat-icon">⭐</div>
+        <div class="stat-text">
+          <div class="num">4.8<span>/5.0</span></div>
+          <div class="label">顧客満足度</div>
+        </div>
+      </div>
+      <div class="hero-stat-card">
+        <div class="stat-icon">🌏</div>
+        <div class="stat-text">
+          <div class="num">離島<span>対応</span></div>
+          <div class="label">石垣・宮古・久米島</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-wave">
+    <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+      <path d="M0,40 C360,80 720,0 1080,40 C1260,60 1380,50 1440,40 L1440,80 L0,80 Z" fill="#FFF8EE"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ══════════ SERVICES ══════════ -->
+<section class="services" id="services">
+  <div class="section-head">
+    <div class="en">SERVICES</div>
+    <h2>トレーラーハウスでできること</h2>
+    <p>設置から移動まで、Park Homes Okinawaがワンストップでサポート</p>
+  </div>
+  <div class="services-grid">
+    <div class="svc-card reveal">
+      <div class="svc-img blue">🔍
+        <div class="wave-pattern">〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰〰</div>
+      </div>
+      <div class="svc-body">
+        <span class="svc-tag tag-blue">SURVEY</span>
+        <h3>設置できるか？<em>運送可能か？</em>を調べたい方</h3>
+        <p>農地・市街化調整区域・離島など、設置可能か事前に無料で調査。沖縄全域・石垣・宮古・久米島も対応しています。</p>
+        <a href="#" class="svc-btn btn-blue" onclick="openModal('chatbot');return false;">
+          <span>🤖 AIに無料相談する</span>
+          <span class="arrow">→</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="svc-card reveal reveal-delay-1">
+      <div class="svc-img coral">📋</div>
+      <div class="svc-body">
+        <span class="svc-tag tag-coral">ESTIMATE</span>
+        <h3>無料見積もり・<em>具体的な提案</em>がほしい方</h3>
+        <p>用途・サイズ・オプションを選ぶだけで概算費用を即時計算。民泊・カフェ・グランピング・住居など用途別に最適プランを提案。</p>
+        <a href="#" class="svc-btn btn-coral" onclick="openModal('estimate');return false;">
+          <span>💰 AI見積もりを試す</span>
+          <span class="arrow">→</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="svc-card reveal reveal-delay-2">
+      <div class="svc-img green">🏡</div>
+      <div class="svc-body">
+        <span class="svc-tag tag-green">PURCHASE</span>
+        <h3>トレーラーハウスを<em>購入・注文</em>したい方</h3>
+        <p>S〜LLサイズ、フルオーダーまで対応。台風対策・塩害仕様・太陽光発電など沖縄に特化したオプションが充実しています。</p>
+        <a href="tel:0988566666" class="svc-btn btn-green">
+          <span>📞 お電話でご相談</span>
+          <span class="arrow">→</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="svc-card reveal reveal-delay-3">
+      <div class="svc-img gold">🔄</div>
+      <div class="svc-body">
+        <span class="svc-tag tag-gold">RESALE</span>
+        <h3>売却・価格査定を<em>依頼したい</em>方</h3>
+        <p>中古トレーラーハウスの買取・価格査定も承ります。状態・年式を確認の上、適正価格でのお取引をサポートします。</p>
+        <a href="#" class="svc-btn btn-gold" onclick="openModal('chatbot');return false;">
+          <span>💬 査定について相談</span>
+          <span class="arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ AI BANNER ══════════ -->
+<section class="ai-banner">
+  <div class="ai-banner-inner">
+    <div class="ai-card reveal" onclick="openModal('chatbot')">
+      <div class="ai-card-icon">🤖</div>
+      <h3>AIチャットアシスタント<span class="ai-badge">24時間対応</span></h3>
+      <p>法令・税金・設置方法・沖縄固有の台風対策まで、8,000件以上の専門知識データベースからAIが即座にお答えします。</p>
+      <div class="ai-card-btn">今すぐ質問する →</div>
+    </div>
+    <div class="ai-card reveal reveal-delay-1" onclick="openModal('estimate')">
+      <div class="ai-card-icon">💰</div>
+      <h3>AI自動見積もり<span class="ai-badge">即時計算</span></h3>
+      <p>チャット形式で用途・エリア・サイズを選ぶだけで概算費用を自動計算。そのまま見積書を印刷・PDF保存できます。</p>
+      <div class="ai-card-btn">見積もりを試す →</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FEATURES ══════════ -->
+<section class="features" id="features">
+  <div class="features-inner">
+    <div class="section-head">
+      <div class="en">WHY TRAILER HOUSE</div>
+      <h2>トレーラーハウスが選ばれる理由</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feat-card reveal">
+        <div class="feat-icon">🏛️</div>
+        <h3>固定資産税がかからない</h3>
+        <p>車両扱いのため動産とみなされ、固定資産税の課税対象外。長期保有でも税負担がありません。</p>
+        <div class="tag">節税効果 大</div>
+      </div>
+      <div class="feat-card reveal reveal-delay-1">
+        <div class="feat-icon">📄</div>
+        <h3>建築確認申請が不要</h3>
+        <p>3要件を満たす車両扱いであれば建築確認が不要。市街化調整区域など建物を建てられない土地にも設置可能。</p>
+        <div class="tag">手続き簡単</div>
+      </div>
+      <div class="feat-card reveal reveal-delay-2">
+        <div class="feat-icon">🚛</div>
+        <h3>移動・再配置ができる</h3>
+        <p>事業撤退・移住・土地売却の際も移動できる安心感。資産を固定しない柔軟な経営を実現します。</p>
+        <div class="tag">リスク分散</div>
+      </div>
+      <div class="feat-card reveal">
+        <div class="feat-icon">⚡</div>
+        <h3>減価償却4年の節税</h3>
+        <p>法定耐用年数4年で短期間に全額経費化可能。事業用として購入すれば初年度から大きな節税効果があります。</p>
+        <div class="tag">法人に最適</div>
+      </div>
+      <div class="feat-card reveal reveal-delay-1">
+        <div class="feat-icon">🌀</div>
+        <h3>沖縄仕様・台風対策</h3>
+        <p>タイダウン固定・耐風圧設計・塩害対応外装材など沖縄の環境に特化した仕様を標準装備。</p>
+        <div class="tag">沖縄専門</div>
+      </div>
+      <div class="feat-card reveal reveal-delay-2">
+        <div class="feat-icon">🏝️</div>
+        <h3>離島への設置も対応</h3>
+        <p>石垣島・宮古島・久米島など離島への輸送・設置実績多数。フェリー輸送から現地施工まで一貫対応。</p>
+        <div class="tag">離島OK</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ FAQ ══════════ -->
+<section class="faq" id="faq">
+  <div class="faq-inner">
+    <div class="section-head">
+      <div class="en">FAQ</div>
+      <h2>よくご参照いただく質問</h2>
+    </div>
+    <div class="faq-grid">
+      <div class="faq-item" onclick="openModal('chatbot')">
+        <span class="faq-q">Q.</span><span class="faq-text">トレーラーハウスは設置場所に制限はあるの？</span>
+      </div>
+      <div class="faq-item" onclick="openModal('chatbot')">
+        <span class="faq-q">Q.</span><span class="faq-text">トレーラーハウスは税金がかからないって本当？</span>
+      </div>
+      <div class="faq-item" onclick="openModal('chatbot')">
+        <span class="faq-q">Q.</span><span class="faq-text">広さはどれくらいのものがありますか？</span>
+      </div>
+      <div class="faq-item" onclick="openModal('chatbot')">
+        <span class="faq-q">Q.</span><span class="faq-text">間取りの自由度はどのくらいですか？</span>
+      </div>
+      <div class="faq-item" onclick="openModal('chatbot')">
+        <span class="faq-q">Q.</span><span class="faq-text">何人くらいまで住むことができますか？</span>
+      </div>
+      <div class="faq-item" onclick="openModal('chatbot')">
+        <span class="faq-q">Q.</span><span class="faq-text">トレーラーハウスで飲食店はできますか？</span>
+      </div>
+      <div class="faq-item" onclick="openModal('chatbot')">
+        <span class="faq-q">Q.</span><span class="faq-text">沖縄の台風でも大丈夫ですか？</span>
+      </div>
+      <div class="faq-item" onclick="openModal('chatbot')">
+        <span class="faq-q">Q.</span><span class="faq-text">納期はどれくらいかかりますか？</span>
+      </div>
+    </div>
+    <div class="faq-more">
+      <a href="#" class="btn-faq-more" onclick="openModal('chatbot');return false;">
+        🤖 AIにもっと質問する →
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ CTA ══════════ -->
+<section class="cta">
+  <h2>沖縄でトレーラーハウスをはじめよう</h2>
+  <p>まずはAIに気軽に質問するか、無料見積もりをお試しください。<br>専門スタッフへのご相談もお気軽にどうぞ。</p>
+  <div class="cta-btns">
+    <a href="#" class="btn-cta-white" onclick="openModal('estimate');return false;">💰 無料見積もりを試す</a>
+    <a href="#" class="btn-cta-outline" onclick="openModal('chatbot');return false;">🤖 AIに質問する</a>
+    <a href="tel:0988566666" class="btn-cta-outline">📞 電話で相談する</a>
+  </div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer id="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="name">🏠 Park Homes Okinawa</div>
+        <p>沖縄県のトレーラーハウス専門メーカー。<br>製造・販売・設置・アフターサポートまで<br>ワンストップで対応いたします。</p>
+        <div class="footer-tel"><span style="display:inline-flex;align-items:center;gap:4px;white-space:nowrap;">📞&nbsp;098-856-6666</span></div>
+        <div class="footer-hours">受付時間：9:00〜18:00（土日祝休）</div>
+      </div>
+      <div class="footer-nav">
+        <h4>MENU</h4>
+        <a href="#services">トレーラーハウス一覧</a>
+        <a href="#services">用途別一覧</a>
+        <a href="#features">設置実績</a>
+        <a href="#faq">よくある質問</a>
+        <a href="#footer">会社概要</a>
+      </div>
+      <div class="footer-nav">
+        <h4>サービス</h4>
+        <a href="#" onclick="openModal('chatbot');return false;">AIチャット相談</a>
+        <a href="#" onclick="openModal('estimate');return false;">AI無料見積もり</a>
+        <a href="#">中古トレーラーハウス</a>
+        <a href="#">売却・査定</a>
+        <a href="#">プライバシーポリシー</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Park Homes Okinawa. All rights reserved.</p>
+      <p>沖縄県豊見城市豊崎1-1223｜TEL: 098-856-6666</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════ FLOATING BUTTONS ══════════ -->
+<div class="floating-widgets">
+  <button class="fw-btn fw-chat" onclick="openModal('chatbot')" title="AIに質問">
+    <div class="fw-pulse"></div>
+    <div class="fw-icon">🤖</div>
+    <div class="fw-label">AI相談</div>
+  </button>
+  <button class="fw-btn fw-estimate" onclick="openModal('estimate')" title="見積もり">
+    <div class="fw-icon">💰</div>
+    <div class="fw-label">見積もり</div>
+  </button>
+  <button class="fw-btn fw-tel" onclick="location.href='tel:0988566666'" title="電話">
+    <div class="fw-icon">📞</div>
+    <div class="fw-label">電話</div>
+  </button>
+</div>
+
+<!-- ══════════ MODAL: CHATBOT ══════════ -->
+<div class="modal-overlay" id="modal-chatbot" onclick="closeOnOverlay(event,'modal-chatbot')">
+  <div class="modal-box">
+    <div class="modal-header" style="background:linear-gradient(135deg,#005F8A,#33B5E5)">
+      <span class="icon">🤖</span>
+      <span class="title">Park Homes AIアシスタント</span>
+      <button class="modal-close" onclick="closeModal('modal-chatbot')">×</button>
+    </div>
+    <div class="modal-body">
+      <iframe class="modal-iframe" id="chatbot-frame"
+        src="about:blank"
+        data-src="chatbot.html"
+        title="AIチャット"></iframe>
+    </div>
+    <div class="modal-notice">💡 8,100件の専門知識データベースで回答します</div>
+  </div>
+</div>
+
+<!-- ══════════ MODAL: ESTIMATE ══════════ -->
+<div class="modal-overlay" id="modal-estimate" onclick="closeOnOverlay(event,'modal-estimate')">
+  <div class="modal-box" style="width:min(96vw,720px);max-height:90vh;">
+    <div class="modal-header" style="background:linear-gradient(135deg,#FF6B4A,#FF9D7E)">
+      <span class="icon">💰</span>
+      <span class="title">AI自動見積もり</span>
+      <button class="modal-close" onclick="closeModal('modal-estimate')">×</button>
+    </div>
+    <div class="modal-body">
+      <iframe class="modal-iframe" id="estimate-frame" style="height:700px"
+        src="about:blank"
+        data-src="estimate.html"
+        title="AI見積もり"></iframe>
+    </div>
+    <div class="modal-notice">📄 見積書はPDF保存・印刷が可能です</div>
+  </div>
+</div>
+
+<script>
+// ════════════
+// Modal
+// ════════════
+function openModal(type) {
+  const id = 'modal-' + type;
+  const overlay = document.getElementById(id);
+  const frameId = type + '-frame';
+  const frame   = document.getElementById(frameId);
+  // lazy load iframe
+  if (frame && frame.src === 'about:blank') {
+    frame.src = frame.dataset.src || 'about:blank';
+  }
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeOnOverlay(e, id) {
+  if (e.target === document.getElementById(id)) closeModal(id);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(m => {
+      m.classList.remove('open');
+    });
+    document.body.style.overflow = '';
+  }
+});
+
+// ════════════
+// Scroll reveal
+// ════════════
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ════════════
+// Sticky header shrink
+// ════════════
+window.addEventListener('scroll', () => {
+  const h = document.querySelector('header');
+  h.style.boxShadow = window.scrollY > 50
+    ? '0 4px 30px rgba(0,94,138,0.2)'
+    : '0 2px 20px rgba(0,94,138,0.12)';
+});
+</script>
+
+</body>
+</html>
