@@ -130,9 +130,9 @@ header{background:var(--twilight);border-bottom:1px solid var(--border);padding:
 <body>
 
 <script>
-// URLパラメータからAPIキーを取得
-// 使い方: https://hideo-t.github.io/QAparkhome/?key=sk-ant-xxxx
-const ANTHROPIC_API_KEY = new URLSearchParams(window.location.search).get('key') || '';
+// プロキシ経由のため APIキー不要
+
+const ANTHROPIC_API_KEY = "";
 </script>
 
 <header>
@@ -186,7 +186,7 @@ const MODEL = "claude-sonnet-4-20250514";
 let kb=[], history=[], streaming=false, abort=null;
 
 window.addEventListener('DOMContentLoaded', async () => {
-  if (!ANTHROPIC_API_KEY || ANTHROPIC_API_KEY.includes("ここに")) {
+  if (false) // プロキシ使用のためチェック不要 {
     setStatus('error','APIキー未設定');
     toast('index.html の APIキーを設定してください','err');
     return;
@@ -320,7 +320,7 @@ async function streamAPI(userText, hits, bubble, row) {
   try {
     const res = await fetch('https://aisdr-proxy.hdxrope.workers.dev/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01'},
+      headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01'},
       body:JSON.stringify({model:MODEL,max_tokens:1024,system,messages,stream:true}),
       signal:abort.signal,
     });
