@@ -318,9 +318,9 @@ async function streamAPI(userText, hits, bubble, row) {
   const messages=[...history.slice(0,-1),{role:'user',content:userText}].slice(-10);
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages',{
+    const res = await fetch('https://aisdr-proxy.hdxrope.workers.dev/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01'},
       body:JSON.stringify({model:MODEL,max_tokens:1024,system,messages,stream:true}),
       signal:abort.signal,
     });
