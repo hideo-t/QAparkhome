@@ -186,11 +186,6 @@ const MODEL = "claude-sonnet-4-20250514";
 let kb=[], history=[], streaming=false, abort=null;
 
 window.addEventListener('DOMContentLoaded', async () => {
-  if (false) // プロキシ使用のためチェック不要 {
-    setStatus('error','APIキー未設定');
-    toast('index.html の APIキーを設定してください','err');
-    return;
-  }
   setStatus('thinking','KB読み込み中...');
   await loadKB();
 });
