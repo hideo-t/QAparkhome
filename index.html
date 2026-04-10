@@ -313,28 +313,15 @@ async function streamAPI(userText, hits, bubble, row) {
   const messages=[...history.slice(0,-1),{role:'user',content:userText}].slice(-10);
 
   try {
-    const res = await fetch('https://aisdr-proxy.hdxrope.workers.dev/v1/messages',{
+    const res = await fetch('https://aisdr-proxy.hdxrope.workers.dev/',{
       method:'POST',
       headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01'},
-      body:JSON.stringify({model:MODEL,max_tokens:1024,system,messages,stream:true}),
+      body:JSON.stringify({model:MODEL,max_tokens:1024,system,messages}),
       signal:abort.signal,
     });
     if (!res.ok){const e=await res.json().catch(()=>({})); throw new Error(e?.error?.message||`HTTP ${res.status}`);}
-    const reader=res.body.getReader(), decoder=new TextDecoder();
-    let buf='',full='';
-    bubble.innerHTML='';
-    while(true){
-      const {done,value}=await reader.read();
-      if(done) break;
-      buf+=decoder.decode(value,{stream:true});
-      const lines=buf.split('\n'); buf=lines.pop()||'';
-      for(const line of lines){
-        if(!line.startsWith('data: ')) continue;
-        const d=line.slice(6).trim();
-        if(d==='[DONE]') break;
-        try{const j=JSON.parse(d);if(j.type==='content_block_delta'&&j.delta?.text){full+=j.delta.text;bubble.innerHTML=md(full)+'<span class="stream-cursor"></span>';scrollBottom();}}catch(e){}
-      }
-    }
+    const data=await res.json();
+    const full=data.content?.[0]?.text||'（応答なし）';
     bubble.innerHTML=md(full);
     if(hits.length){
       const chips=document.createElement('div'); chips.className='source-chips';
