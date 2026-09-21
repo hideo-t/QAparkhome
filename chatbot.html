@@ -323,7 +323,8 @@ async function streamAPI(userText, hits, bubble, row) {
     });
     if (!res.ok){const e=await res.json().catch(()=>({})); throw new Error(e?.error?.message||`HTTP ${res.status}`);}
     const data=await res.json();
-    const full=data.content?.[0]?.text||'（応答なし）';
+    // thinkingブロックが先頭に来ることがあるので、text ブロックだけを拾う
+    const full=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n').trim()||'（応答なし）';
     bubble.innerHTML=md(full);
     if(hits.length){
       const chips=document.createElement('div'); chips.className='source-chips';
