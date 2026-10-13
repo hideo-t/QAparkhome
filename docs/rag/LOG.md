@@ -62,3 +62,14 @@
 - 10:00 `keep_vars = true` を入れて再デプロイ（版 `7da41a25`）→ **キーがまた消え、2回目の停止**。数分後に同じ rollback で復旧。
   確認していない対策を本番で試したのが原因。`keep_vars` は外した（aisdr-proxy `9295b74`）。
 - 方針: ダッシュボードで3つのキーを Secret に変え、`wrangler secret list` に3つ出るのを確かめるまで deploy しない。
+
+### キーの Secret 化（本番に出さずに準備）
+- 管理画面の「変数とシークレット」は最新の版（キーなし）を表示しており、そこからは切り替えられなかった（ユーザー側の調査）。
+- `wrangler versions secret put` は新しい版を作るだけで本番に出さない（公式ドキュメントで確認）。
+  本番の版 `32be34f7` の平文キーを、画面に出さずに Secret としてコピーするスクリプトを追加（aisdr-proxy `scripts/copy-vars-to-secrets.sh`）。
+- 新しい版 `d0d09335` に Secret 3つ＋レート制限がそろったことを確認。本番は `32be34f7` のまま。
+- プレビューURL（`d0d09335-aisdr-proxy...`）で確認:
+  - `/`（町医者用）: 正常に回答
+  - `/parkhomes/chat` 他サイト: 403
+  - `/parkhomes/chat` 質問: 知識ベースの「車両扱いの3要件」に沿って回答、`cache_read_input_tokens 5069`（キャッシュが効いている）
+  - クライアントが送った system（英語で答えて）・model は無視された
