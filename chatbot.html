@@ -184,96 +184,11 @@ const ANTHROPIC_API_KEY = "";
 <button class="top-btn" id="topBtn" onclick="scrollToTop()" title="トップに戻る">↑</button>
 
 <script>
-const MODEL = "claude-sonnet-5";
-let kb=[], history=[], streaming=false, abort=null;
+// 回答は Worker 側で作る（知識ベース・指示・モデルはサーバー側）。設計: docs/rag/DESIGN.md
+const API_URL = "https://aisdr-proxy.hdxrope.workers.dev/parkhomes/chat";
+let history=[], streaming=false, abort=null;
 
-window.addEventListener('DOMContentLoaded', async () => {
-  setStatus('thinking','KB読み込み中...');
-  await loadKB();
-});
-
-async function loadKB() {
-  try {
-    const res = await fetch('./qa_data.json');
-    if (!res.ok) throw new Error();
-    kb = await res.json();
-    setStatus('ready', `準備完了 · ${kb.length}問`);
-  } catch(e) {
-    kb = sampleData();
-    setStatus('ready', `準備完了 · ${kb.length}問（サンプル）`);
-  }
-}
-
-function searchKB(query, topK=8) {
-  const qt  = tokenize(query);
-  const qbg = bigrams(query);
-  const ql  = query.length;
-
-  const scored = kb.map(item => {
-    const qTokens = tokenize(item.question);
-    const aTokens = tokenize(item.answer||'');
-    const ibg     = bigrams(item.question);
-    let score = 0;
-
-    // ① 完全一致ボーナス（質問そのもの）
-    if (item.question === query) score += 20;
-
-    // ② バイグラムマッチ（フレーズの連続性）
-    for (const bg of qbg)
-      if (ibg.includes(bg)) score += 3;
-
-    // ③ トークンマッチ（質問側に重み×2、回答側×1）
-    for (const q of qt) {
-      for (const t of qTokens)
-        score += t===q ? 4 : (t.includes(q)||q.includes(t)) ? 2 : 0;
-      for (const t of aTokens)
-        score += t===q ? 2 : (t.includes(q)||q.includes(t)) ? 1 : 0;
-    }
-
-    // ④ カテゴリキーワードボーナス
-    const cat = item.category||'';
-    if ((query.includes('税') || query.includes('費用') || query.includes('価格')) && cat.includes('税')) score += 2;
-    if ((query.includes('法') || query.includes('許可') || query.includes('申請')) && cat.includes('法')) score += 2;
-    if ((query.includes('設置') || query.includes('工事') || query.includes('土地')) && cat.includes('設置')) score += 2;
-    if ((query.includes('台風') || query.includes('沖縄') || query.includes('離島')) && cat.includes('沖縄')) score += 3;
-    if ((query.includes('台風') || query.includes('災害') || query.includes('安全')) && cat.includes('災害')) score += 2;
-
-    // ⑤ 短い質問への長さペナルティ軽減
-    const lenBonus = Math.min(ql / 10, 1.5);
-    score *= lenBonus;
-
-    return {...item, score};
-  }).filter(i => i.score > 0)
-    .sort((a,b) => b.score - a.score);
-
-  // ⑥ 重複回答の排除（同じanswerは1件だけ）
-  const seen = new Set();
-  const deduped = [];
-  for (const item of scored) {
-    const key = (item.answer||'').slice(0, 40);
-    if (!seen.has(key)) {
-      seen.add(key);
-      deduped.push(item);
-    }
-    if (deduped.length >= topK) break;
-  }
-  return deduped;
-}
-
-function tokenize(text) {
-  return (text||'')
-    .replace(/[？！。、「」・…『』【】\(\)（）]/g,' ')
-    .split(/\s+/)
-    .filter(t => t.length >= 2);
-}
-
-function bigrams(text) {
-  const clean = (text||'').replace(/\s+/g,'');
-  const result = [];
-  for (let i=0; i<clean.length-1; i++)
-    result.push(clean.slice(i,i+2));
-  return result;
-}
+window.addEventListener('DOMContentLoaded', () => setStatus('ready','準備完了'));
 
 async function sendMessage() {
   const input = document.getElementById('msgInput');
@@ -284,57 +199,38 @@ async function sendMessage() {
   input.value=''; input.style.height='auto';
   appendMsg('user', text);
   history.push({role:'user', content:text});
-  const hits = searchKB(text);
   const {bubble, row} = appendMsg('assistant','');
   bubble.innerHTML='<div class="typing-dots"><span></span><span></span><span></span></div>';
-  await streamAPI(text, hits, bubble, row);
+  await streamAPI(bubble, row);
 }
 
 function suggest(btn){ document.getElementById('msgInput').value=btn.textContent; sendMessage(); }
 
-async function streamAPI(userText, hits, bubble, row) {
+async function streamAPI(bubble, row) {
   streaming=true; abort=new AbortController();
   document.getElementById('sendBtn').disabled=true;
   document.getElementById('stopBtn').style.display='';
   setStatus('thinking','考え中...');
 
-  let ctx='';
-  if (hits.length) ctx='\n\n【関連専門知識 - 上位'+hits.length+'件】\n'+
-    hits.map((h,i)=>`[${i+1}][${h.category}] Q:${h.question}\n    A:${h.answer}`).join('\n\n');
-
-  const system=`あなたはPark Homes Okinawa（トレーラーハウスメーカー）の専門AIアシスタントです。
-沖縄でのトレーラーハウスの購入・設置・活用に関するあらゆる質問に、わかりやすく親切に回答してください。
-
-ルール：
-- 法令・税金の断定は避け「〜の可能性があります」「自治体にご確認ください」と補足する
-- 沖縄固有の事情（台風・塩害・用途地域）を意識する
-- 答えに自信がない場合は「担当者にお問い合わせください」と案内する
-- 重要な点は箇条書きを活用する
-- 回答の最後に関連する質問を1つ提案する${ctx}`;
-
-  const messages=[...history.slice(0,-1),{role:'user',content:userText}].slice(-10);
+  const messages=history.slice(-10);
 
   try {
-    const res = await fetch('https://aisdr-proxy.hdxrope.workers.dev/',{
+    const res = await fetch(API_URL,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:MODEL,max_tokens:1024,system,messages}),
+      body:JSON.stringify({messages}),
       signal:abort.signal,
     });
     if (!res.ok){const e=await res.json().catch(()=>({})); throw new Error(e?.error?.message||`HTTP ${res.status}`);}
     const data=await res.json();
-    // thinkingブロックが先頭に来ることがあるので、text ブロックだけを拾う
-    const full=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n').trim()||'（応答なし）';
+    const full=data.answer||'（応答なし）';
     bubble.innerHTML=md(full);
-    if(hits.length){
-      const chips=document.createElement('div'); chips.className='source-chips';
-      hits.slice(0,3).forEach(h=>{const c=document.createElement('span');c.className='chip';c.textContent='📚 '+(h.category||'KB');chips.appendChild(c);});
-      row.querySelector('.bubble-wrap').appendChild(chips);
-    }
     addTime(row);
     history.push({role:'assistant',content:full});
-    setStatus('ready',`準備完了 · ${kb.length}問`);
+    setStatus('ready','準備完了');
   } catch(e) {
+    // 失敗した質問は履歴から外す（次の送信で user が2つ続かないように）
+    if(history.length && history[history.length-1].role==='user') history.pop();
     if(e.name==='AbortError'){bubble.innerHTML=md(bubble.textContent||'（停止しました）');setStatus('ready','停止');}
     else{bubble.innerHTML=`<span style="color:var(--coral)">❌ ${esc(e.message)}</span>`;setStatus('error','エラー');toast(e.message,'err');}
   }
@@ -396,18 +292,6 @@ function clearChat(){
 function setStatus(state,label){document.getElementById('dot').className='dot '+(state||'');document.getElementById('statusText').textContent=label||'';}
 function toast(msg,type=''){const w=document.getElementById('toastWrap');const el=document.createElement('div');el.className='toast '+type;el.textContent=msg;w.appendChild(el);setTimeout(()=>el.remove(),3500);}
 
-function sampleData(){return[
-  {category:"法令",question:"トレーラーハウスは建築物ですか？車両ですか？",answer:"3要件（①公道走行可②随時移動可③配線着脱可）を満たせば車両扱いになります。"},
-  {category:"税金",question:"固定資産税はかかりますか？",answer:"車両扱いの場合はかかりません。動産扱いのため課税対象外です。"},
-  {category:"税金",question:"減価償却は何年ですか？",answer:"法定耐用年数は4年です。車両分類のため節税効果が高いです。"},
-  {category:"税金",question:"本体価格の相場は？",answer:"400〜1,200万円が目安。設置工事費50〜150万円が別途かかります。"},
-  {category:"法令",question:"農地に設置できますか？",answer:"農地転用の手続きが必要です。農業委員会にご確認ください。"},
-  {category:"設置",question:"台風対策は大丈夫？",answer:"タイダウン固定・耐風圧設計・塩害対応外装材が重要です。沖縄仕様についてはお問い合わせください。"},
-  {category:"設置",question:"離島への設置は可能？",answer:"フェリー輸送で可能ですが本島より費用が割増になります。"},
-  {category:"活用",question:"民泊として使いたい",answer:"旅館業法の簡易宿所許可（保健所）と消防法要件が必要です。"},
-  {category:"比較",question:"コンテナハウスとの違いは？",answer:"移動可能・固定資産税なし・設置制限が少ない点が主な違いです。"},
-  {category:"比較",question:"プレハブと何が違うの？",answer:"プレハブは建築物扱いで固定資産税・建築確認が必要。トレーラーハウスは車両扱いでこれらが不要な場合があります。"},
-];}
 </script>
 </body>
 </html>
