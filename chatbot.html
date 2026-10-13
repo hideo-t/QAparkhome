@@ -48,6 +48,9 @@ header{background:var(--twilight);border-bottom:1px solid var(--border);padding:
 .bubble{padding:11px 15px;border-radius:13px;font-size:14px;line-height:1.7;word-break:break-word;}
 .msg-row.user .bubble{background:var(--card);border:1px solid var(--border);border-radius:13px 4px 13px 13px;}
 .msg-row.assistant .bubble{background:var(--twilight);border:1px solid var(--border);border-radius:4px 13px 13px 13px;color:#e2e8f0;}
+.bubble .md-h{font-size:14px;font-weight:700;margin:12px 0 4px;color:var(--sky,#38bdf8);}
+.bubble .md-hr{border:0;border-top:1px solid var(--border);margin:10px 0;}
+.bubble a{color:var(--sky,#38bdf8);text-decoration:underline;word-break:break-all;}
 .source-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px;}
 .chip{background:rgba(0,153,204,0.1);border:1px solid rgba(0,153,204,0.2);color:var(--sky);padding:2px 8px;border-radius:20px;font-size:10px;}
 .msg-time{font-size:10px;color:var(--muted);margin-top:4px;padding:0 3px;}
@@ -259,6 +262,12 @@ function md(t){
   t=t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
   t=t.replace(/\*(.+?)\*/g,'<em>$1</em>');
   t=t.replace(/`([^`]+)`/g,'<code>$1</code>');
+  // 見出し・区切り線（Worker の指示で「## 」を使う）
+  t=t.replace(/^#{1,4}\s+(.+)$/gm,'<h4 class="md-h">$1</h4>');
+  t=t.replace(/^-{3,}$/gm,'<hr class="md-hr">');
+  // リンクは公式サイトのURLだけ許可する（[タイトル](URL)）
+  t=t.replace(/\[([^\]]+)\]\((https:\/\/(?:www\.)?parkhomes-okinawa\.com\/[^\s)]*)\)/g,
+    (m,txt,url)=>`<a href="${url.replace(/"/g,'%22')}" target="_blank" rel="noopener">${txt}</a>`);
   t=t.replace(/^[-・]\s(.+)$/gm,'<li>$1</li>');
   t=t.replace(/(<li>[\s\S]*?<\/li>)+/g,'<ul>$&</ul>');
   t=t.split('\n\n').map(p=>p.trim()?`<p>${p.replace(/\n/g,'<br>')}</p>`:'').join('');
