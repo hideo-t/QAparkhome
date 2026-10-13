@@ -132,7 +132,6 @@ header{background:var(--twilight);border-bottom:1px solid var(--border);padding:
 <script>
 // プロキシ経由のため APIキー不要
 
-const ANTHROPIC_API_KEY = "";
 </script>
 
 <header>
@@ -169,7 +168,7 @@ const ANTHROPIC_API_KEY = "";
   </div>
   <div class="input-area">
     <div class="input-box">
-      <textarea class="msg-ta" id="msgInput" placeholder="質問を入力してください..." rows="1"
+      <textarea class="msg-ta" id="msgInput" placeholder="質問を入力してください..." rows="1" maxlength="1000"
         onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
       <button class="stop-btn" id="stopBtn" style="display:none" onclick="stopStream()">⏹ 停止</button>
       <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
@@ -282,6 +281,7 @@ function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrol
 
 function clearChat(){
   if(!confirm('会話をクリアしますか？')) return;
+  abort?.abort();
   history=[];
   const c=document.getElementById('messages'); c.innerHTML='';
   const w=document.createElement('div'); w.id='welcome'; w.className='welcome';
