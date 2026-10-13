@@ -59,3 +59,6 @@
 - 10:00頃 `wrangler rollback 32be34f7` で復旧。`/` が正常に回答することを確認。
 - 再発防止: `wrangler.toml` に `keep_vars = true`（aisdr-proxy `a01d374`）。経緯は aisdr-proxy の README 障害履歴。
 - 今後の検討: キーを Secret に移す。DeepSeek のキーは調査中に作業ログへ全体が出たので作り直しを推奨。
+- 10:00 `keep_vars = true` を入れて再デプロイ（版 `7da41a25`）→ **キーがまた消え、2回目の停止**。数分後に同じ rollback で復旧。
+  確認していない対策を本番で試したのが原因。`keep_vars` は外した（aisdr-proxy `9295b74`）。
+- 方針: ダッシュボードで3つのキーを Secret に変え、`wrangler secret list` に3つ出るのを確かめるまで deploy しない。
