@@ -36,3 +36,17 @@
 - 送信は `{ messages }` だけ、表示は `data.answer`。
 - 失敗した質問は履歴から外す（次の送信で user が2つ続かないように）。
 - Worker のデプロイと本番確認が済むまで main にはマージしない（GitHub Pages が即時反映されるため）。
+
+### レビュー（別エージェント）と修正
+- 重大・高の指摘なし。中・低の指摘を反映（aisdr-proxy の修正コミット、QAparkhome ブランチの修正コミット）。
+  - 例外時もCORSヘッダー付きで 502 を返す
+  - レート制限の binding が無い本番では 503（制限なしで公開しない。localhost だけ例外）
+  - Anthropic のエラー詳細（キー・残高の状態）は画面に出さず、Worker のログにだけ残す
+  - `Vary: Origin` を常に付ける。preflight を `Max-Age 86400` でキャッシュ
+  - messages は50件まで
+  - `max_tokens` を 2048 に（`claude-sonnet-5` の thinking もこの枠を使い、1024 だと回答が切れるおそれ）
+  - 画面: クリア時に送信中の要求を止める、入力欄 `maxlength=1000`、空の `ANTHROPIC_API_KEY` 定数を削除
+- 見送り: `hideo-t.github.io` は GitHub Pages 全体で1つの Origin なので、同じアカウントの他リポジトリのページからも呼べる。現状は許容。
+- 修正後にローカル確認と単体テストを再実行し、すべて期待どおり。
+
+### 次: デプロイ（Cloudflare へのログインが必要）
