@@ -40,6 +40,10 @@ details pre{white-space:pre-wrap;font:inherit;font-size:13px;margin-top:6px;colo
 .badge.nokb{border-color:var(--coral);color:var(--coral);}
 .badge.approved{border-color:var(--ok);color:var(--ok);}
 .hidden{display:none;}
+table.usage{width:100%;border-collapse:collapse;font-size:13px;}
+table.usage th,table.usage td{border-top:1px solid var(--border);padding:5px 6px;text-align:right;white-space:nowrap;}
+table.usage th:first-child,table.usage td:first-child,table.usage th:nth-child(2),table.usage td:nth-child(2){text-align:left;}
+.scroll{overflow-x:auto;}
 #msg{position:fixed;bottom:16px;right:16px;background:var(--twilight);border:1px solid var(--border);border-radius:8px;padding:8px 14px;display:none;}
 @media(max-width:600px){header h1{font-size:14px;}}
 </style>
@@ -60,6 +64,13 @@ details pre{white-space:pre-wrap;font:inherit;font-size:13px;margin-top:6px;colo
     <section>
       <h2>集計</h2>
       <div class="stats" id="stats"></div>
+    </section>
+
+    <section>
+      <h2>API費用（見込み）</h2>
+      <p class="note">Anthropic の単価から計算した見込みです（実際の請求は Anthropic Console で確認）。円は1ドル150円で換算。日付は日本時間。</p>
+      <div class="stats" id="usageStats"></div>
+      <details style="margin-top:10px"><summary>日別の内訳（直近60日）</summary><div class="scroll" id="usageDaily"></div></details>
     </section>
 
     <section>
@@ -138,7 +149,7 @@ function show(){
   loadAll();
 }
 
-async function loadAll(){ await Promise.all([loadSummary(),loadQuestions(),loadAdditions()]).catch(e=>toast(e.message)); }
+async function loadAll(){ await Promise.all([loadSummary(),loadUsage(),loadQuestions(),loadAdditions()]).catch(e=>toast(e.message)); }
 
 async function loadSummary(){
   const d=await api('GET','/summary'); const q=d.questions||{}, a=d.additions||{};
@@ -146,6 +157,30 @@ async function loadSummary(){
   document.getElementById('stats').innerHTML=
     stat(q.q7,'質問（7日）')+stat(q.nokb7,'答えられなかった（7日）')+stat(q.q30,'質問（30日）')+stat(q.nokb30,'答えられなかった（30日）')+
     stat(a.approved,'承認済みの追加知識')+stat(a.draft,'下書き');
+}
+
+// 費用。cost_musd は100万分の1ドル単位
+const YEN_PER_USD=150;
+const KIND={chat:'お客様',eval:'評価（回答）',judge:'評価（採点）'};
+function usd(m){return '$'+((m||0)/1e6).toFixed(2);}
+function yen(m){return Math.round((m||0)/1e6*YEN_PER_USD).toLocaleString('ja-JP')+'円';}
+async function loadUsage(){
+  let d;
+  // Worker が古いと /usage がない。ほかの欄は表示させたいので、ここで止める
+  try{ d=await api('GET','/usage?days=60'); }
+  catch(e){ document.getElementById('usageStats').innerHTML=`<p class="note">読み込めませんでした（${esc(e.message)}）</p>`; return; }
+  const now=new Date(Date.now()+9*3600e3), ym=now.toISOString().slice(0,7);
+  const prev=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()-1,1)).toISOString().slice(0,7);
+  const sum=(month,kinds)=>(d.months||[]).filter(r=>r.month===month&&kinds.includes(r.kind)).reduce((a,r)=>({n:a.n+r.requests,c:a.c+r.cost_musd}),{n:0,c:0});
+  const cur=sum(ym,['chat']), last=sum(prev,['chat']), ev=sum(ym,['eval','judge']);
+  const stat=(c,l)=>`<div class="stat"><b>${yen(c)}</b><span>${l}（${usd(c)}）</span></div>`;
+  document.getElementById('usageStats').innerHTML=
+    stat(cur.c,`今月・お客様 ${cur.n}回`)+stat(last.c,`先月・お客様 ${last.n}回`)+
+    stat(cur.n?cur.c/cur.n:0,'今月・1回あたり')+stat(ev.c,`今月・評価 ${ev.n}回`);
+  const rows=(d.daily||[]).map(r=>`<tr><td>${esc(r.day)}</td><td>${esc(KIND[r.kind]||r.kind)}</td><td>${r.requests}</td><td>${(r.cache_read_tokens||0).toLocaleString()}</td><td>${(r.cache_write_tokens||0).toLocaleString()}</td><td>${(r.output_tokens||0).toLocaleString()}</td><td>${usd(r.cost_musd)}</td><td>${yen(r.cost_musd)}</td></tr>`).join('');
+  document.getElementById('usageDaily').innerHTML=rows
+    ?`<table class="usage"><tr><th>日</th><th>用途</th><th>回数</th><th>キャッシュ読込</th><th>キャッシュ書込</th><th>出力</th><th>ドル</th><th>円</th></tr>${rows}</table>`
+    :'<p class="note">まだ記録がありません</p>';
 }
 
 let questions=[];
