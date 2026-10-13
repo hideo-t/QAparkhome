@@ -73,3 +73,20 @@
   - `/parkhomes/chat` 他サイト: 403
   - `/parkhomes/chat` 質問: 知識ベースの「車両扱いの3要件」に沿って回答、`cache_read_input_tokens 5069`（キャッシュが効いている）
   - クライアントが送った system（英語で答えて）・model は無視された
+
+### 本番切り替えと段階1の完了
+- `wrangler versions deploy d0d09335@100%`（ユーザー実行）。直後に `/` が正常に回答することを確認。
+- 本番 `/parkhomes/chat`: 質問に回答（`cache_read 5069`）、他サイトの Origin は 403。
+- 画面の変更を main にマージ（`bc8b007`）。GitHub Pages の公開完了を確認。
+- 本番画面 `parkhomes-okinawa.com/QAparkhome/` を Playwright で操作（iframe 内）:
+
+| 確認 | 結果 |
+|---|---|
+| 表示 | 「準備完了」 |
+| 1問目「固定資産税はかかりますか？」 | 200、送信は `messages` のみ、知識ベースの3要件に沿って回答、`cache_read 5069` |
+| 2問目「それは沖縄でも同じですか？」 | 200、履歴 user→assistant→user を送信、前の回答を踏まえて回答、`cache_read 5069` |
+| 3MB の `qa_data.json` | 読み込まない |
+| 旧ルート `/` | 呼ばない |
+
+- 見つけた既存の不具合: 本文途中の `## 見出し` が `##` のまま表示される（PLAN 3d）。
+- 残り: 1c（`/` の防御）は町医者の公開URL待ち。
