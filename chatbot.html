@@ -263,12 +263,12 @@ function md(t){
   t=t.replace(/\*(.+?)\*/g,'<em>$1</em>');
   t=t.replace(/`([^`]+)`/g,'<code>$1</code>');
   // 見出し・区切り線（Worker の指示で「## 」を使う）
-  t=t.replace(/^#{1,4}\s+(.+)$/gm,'<h4 class="md-h">$1</h4>');
+  t=t.replace(/^#{1,4}[ 	]+(.+)$/gm,'<h4 class="md-h">$1</h4>');
   t=t.replace(/^-{3,}$/gm,'<hr class="md-hr">');
   // リンクは公式サイトのURLだけ許可する（[タイトル](URL)）
   t=t.replace(/\[([^\]]+)\]\((https:\/\/(?:www\.)?parkhomes-okinawa\.com\/[^\s)]*)\)/g,
     (m,txt,url)=>`<a href="${url.replace(/"/g,'%22')}" target="_blank" rel="noopener">${txt}</a>`);
-  t=t.replace(/^[-・]\s(.+)$/gm,'<li>$1</li>');
+  t=t.replace(/^[-・][ 	](.+)$/gm,'<li>$1</li>');
   t=t.replace(/(<li>[\s\S]*?<\/li>)+/g,'<ul>$&</ul>');
   t=t.split('\n\n').map(p=>p.trim()?`<p>${p.replace(/\n/g,'<br>')}</p>`:'').join('');
   return t;

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>AIアシスタント 管理 | Park Homes Okinawa</title>
+<style>
+:root{
+  --ocean:#006B8F; --sky:#0099CC; --night:#0A1628; --twilight:#112240;
+  --starlight:#CCD6F6; --muted:#8892B0; --card:#172A45; --border:#1E3A5F;
+  --coral:#e8614a; --ok:#2fbf71;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--night);color:var(--starlight);font-family:'Noto Sans JP',system-ui,sans-serif;font-size:14px;line-height:1.7;}
+header{background:var(--twilight);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+header h1{font-size:16px;flex:1;}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 60px;}
+section{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px;}
+h2{font-size:15px;margin-bottom:10px;}
+p.note{color:var(--muted);font-size:12px;margin-bottom:10px;}
+input,textarea,select{width:100%;background:var(--night);color:var(--starlight);border:1px solid var(--border);border-radius:6px;padding:8px;font:inherit;}
+textarea{min-height:110px;resize:vertical;}
+button{background:var(--ocean);color:#fff;border:0;border-radius:6px;padding:7px 14px;font:inherit;cursor:pointer;}
+button:hover{background:var(--sky);}
+button.sub{background:transparent;border:1px solid var(--border);color:var(--starlight);}
+button.warn{background:var(--coral);}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;}
+.stat{background:var(--night);border:1px solid var(--border);border-radius:8px;padding:10px;}
+.stat b{display:block;font-size:22px;}
+.stat span{color:var(--muted);font-size:12px;}
+.item{border-top:1px solid var(--border);padding:10px 0;}
+.item:first-child{border-top:0;}
+.meta{color:var(--muted);font-size:12px;}
+.q{font-weight:700;margin:2px 0;}
+details summary{cursor:pointer;color:var(--muted);font-size:12px;}
+details pre{white-space:pre-wrap;font:inherit;font-size:13px;margin-top:6px;color:var(--starlight);}
+.badge{display:inline-block;font-size:11px;padding:0 8px;border-radius:10px;border:1px solid var(--border);margin-left:6px;}
+.badge.nokb{border-color:var(--coral);color:var(--coral);}
+.badge.approved{border-color:var(--ok);color:var(--ok);}
+.hidden{display:none;}
+#msg{position:fixed;bottom:16px;right:16px;background:var(--twilight);border:1px solid var(--border);border-radius:8px;padding:8px 14px;display:none;}
+@media(max-width:600px){header h1{font-size:14px;}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🏠 AIアシスタント 管理（学習機能）</h1>
+  <button class="sub hidden" id="logoutBtn" onclick="logout()">ログアウト</button>
+</header>
+<main>
+  <section id="login">
+    <h2>管理パスワード</h2>
+    <p class="note">パスワードはこのタブを閉じるまでだけ保存されます。</p>
+    <div class="row"><input type="password" id="token" placeholder="ADMIN_TOKEN" style="flex:1"><button onclick="login()">開く</button></div>
+  </section>
+
+  <div id="app" class="hidden">
+    <section>
+      <h2>集計</h2>
+      <div class="stats" id="stats"></div>
+    </section>
+
+    <section>
+      <div class="row" style="justify-content:space-between">
+        <h2>利用者の質問</h2>
+        <div class="row" style="width:auto">
+          <select id="filter" onchange="loadQuestions()" style="width:auto">
+            <option value="no_kb">答えられなかった質問だけ</option>
+            <option value="all">すべての質問</option>
+          </select>
+          <button class="sub" onclick="loadAll()">更新</button>
+        </div>
+      </div>
+      <p class="note">「答えを書く」で下の登録欄に質問が入ります。承認した答えは、1分ほどで次の質問から回答に使われます。</p>
+      <div id="questions"></div>
+    </section>
+
+    <section id="editor">
+      <h2 id="editorTitle">追加知識を登録</h2>
+      <input type="hidden" id="editId"><input type="hidden" id="srcId">
+      <p class="note">質問（利用者が聞きそうな形で）</p>
+      <input id="addQ" maxlength="500">
+      <p class="note" style="margin-top:10px">答え（正確な内容だけを書く。AIはこの内容をもとに言い換えて答えます）</p>
+      <textarea id="addA" maxlength="3000"></textarea>
+      <div class="row" style="margin-top:10px">
+        <button onclick="save('approved')">承認して使う</button>
+        <button class="sub" onclick="save('draft')">下書き保存</button>
+        <button class="sub" onclick="resetEditor()">クリア</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>追加知識の一覧</h2>
+      <div id="additions"></div>
+    </section>
+  </div>
+</main>
+<div id="msg"></div>
+
+<script>
+// 管理API（hideo-t/aisdr-proxy の /parkhomes/admin/*）。設計: docs/rag/DESIGN.md §5
+const API = "https://aisdr-proxy.hdxrope.workers.dev/parkhomes/admin";
+let token = "";
+try { token = sessionStorage.getItem("ph_admin_token") || ""; } catch (e) {}
+
+function esc(s){return String(s??"").replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function toast(t){const m=document.getElementById('msg');m.textContent=t;m.style.display='block';clearTimeout(m._t);m._t=setTimeout(()=>m.style.display='none',3000);}
+// D1 の datetime('now') は UTC。日本時間で表示する
+function jst(ts){return ts?new Date(ts.replace(' ','T')+'Z').toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'}):'';}
+
+async function api(method, path, body){
+  const res = await fetch(API+path,{method,headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:body?JSON.stringify(body):undefined});
+  const data = await res.json().catch(()=>({}));
+  if(res.status===401){logout();throw new Error('パスワードが違います');}
+  if(!res.ok) throw new Error(data?.error?.message||`HTTP ${res.status}`);
+  return data;
+}
+
+async function login(){
+  token=document.getElementById('token').value.trim();
+  if(!token) return;
+  try{ await api('GET','/summary'); }catch(e){ toast(e.message); return; }
+  try{ sessionStorage.setItem('ph_admin_token',token); }catch(e){}
+  show();
+}
+function logout(){
+  token=''; try{ sessionStorage.removeItem('ph_admin_token'); }catch(e){}
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('login').classList.remove('hidden');
+  document.getElementById('logoutBtn').classList.add('hidden');
+}
+function show(){
+  document.getElementById('login').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('logoutBtn').classList.remove('hidden');
+  loadAll();
+}
+
+async function loadAll(){ await Promise.all([loadSummary(),loadQuestions(),loadAdditions()]).catch(e=>toast(e.message)); }
+
+async function loadSummary(){
+  const d=await api('GET','/summary'); const q=d.questions||{}, a=d.additions||{};
+  const stat=(n,l)=>`<div class="stat"><b>${n??0}</b><span>${l}</span></div>`;
+  document.getElementById('stats').innerHTML=
+    stat(q.q7,'質問（7日）')+stat(q.nokb7,'答えられなかった（7日）')+stat(q.q30,'質問（30日）')+stat(q.nokb30,'答えられなかった（30日）')+
+    stat(a.approved,'承認済みの追加知識')+stat(a.draft,'下書き');
+}
+
+let questions=[];
+async function loadQuestions(){
+  const only=document.getElementById('filter').value==='no_kb'?'&only=no_kb':'';
+  const d=await api('GET','/questions?limit=200'+only); questions=d.items||[];
+  document.getElementById('questions').innerHTML = questions.length ? questions.map((x,i)=>`
+    <div class="item">
+      <div class="meta">${esc(jst(x.ts))}・会話の${x.turns}問目${x.no_kb?'<span class="badge nokb">答えられなかった</span>':''}</div>
+      <div class="q">${esc(x.question)}</div>
+      <details><summary>AIの回答を見る</summary><pre>${esc(x.answer)}</pre></details>
+      <div class="row" style="margin-top:6px"><button class="sub" onclick="answerFor(${i})">答えを書く</button></div>
+    </div>`).join('') : '<p class="note">まだありません。</p>';
+}
+
+let additions=[];
+async function loadAdditions(){
+  const d=await api('GET','/additions'); additions=d.items||[];
+  const label={approved:'承認済み',draft:'下書き',archived:'使わない'};
+  document.getElementById('additions').innerHTML = additions.length ? additions.map((x,i)=>`
+    <div class="item">
+      <div class="meta">A${x.id}・更新 ${esc(jst(x.updated_at))}<span class="badge ${x.status}">${label[x.status]||x.status}</span></div>
+      <div class="q">${esc(x.question)}</div>
+      <details><summary>答えを見る</summary><pre>${esc(x.answer)}</pre></details>
+      <div class="row" style="margin-top:6px">
+        <button class="sub" onclick="edit(${i})">編集</button>
+        ${x.status!=='approved'?`<button onclick="setStatus(${x.id},'approved')">承認</button>`:''}
+        ${x.status!=='archived'?`<button class="sub" onclick="setStatus(${x.id},'archived')">使わない</button>`:''}
+      </div>
+    </div>`).join('') : '<p class="note">まだありません。</p>';
+}
+
+function answerFor(i){
+  const x=questions[i]; resetEditor();
+  document.getElementById('addQ').value=x.question;
+  document.getElementById('srcId').value=x.id;
+  document.getElementById('editor').scrollIntoView({behavior:'smooth'});
+  document.getElementById('addA').focus();
+}
+function edit(i){
+  const x=additions[i];
+  document.getElementById('editId').value=x.id;
+  document.getElementById('addQ').value=x.question;
+  document.getElementById('addA').value=x.answer;
+  document.getElementById('editorTitle').textContent=`追加知識 A${x.id} を編集`;
+  document.getElementById('editor').scrollIntoView({behavior:'smooth'});
+}
+function resetEditor(){
+  ['editId','srcId','addQ','addA'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('editorTitle').textContent='追加知識を登録';
+}
+async function save(status){
+  const question=document.getElementById('addQ').value.trim(), answer=document.getElementById('addA').value.trim();
+  if(!question||!answer){toast('質問と答えを入力してください');return;}
+  const id=document.getElementById('editId').value, src=Number(document.getElementById('srcId').value)||undefined;
+  try{
+    if(id) await api('POST',`/additions/${id}`,{question,answer,status});
+    else await api('POST','/additions',{question,answer,status,source_log_id:src});
+    toast(status==='approved'?'承認しました':'下書き保存しました'); resetEditor(); loadAll();
+  }catch(e){toast(e.message);}
+}
+async function setStatus(id,status){
+  try{ await api('POST',`/additions/${id}`,{status}); toast('更新しました'); loadAll(); }catch(e){toast(e.message);}
+}
+
+document.getElementById('token').addEventListener('keydown',e=>{if(e.key==='Enter')login();});
+if(token) api('GET','/summary').then(show).catch(()=>logout());
+</script>
+</body>
+</html>

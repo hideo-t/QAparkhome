@@ -18,13 +18,15 @@ EXCLUDE = {"/sitemap/", "/j/privacy/", "/contact/thanks.html", "/pages/estimate.
 SKIP_TAGS = {"script", "style", "noscript", "svg", "nav", "footer", "header", "form", "button", "template"}
 SKIP_CLASSES = {"mobile-menu", "hamburger", "nav-links", "nav-inner", "pkw-langbar", "breadcrumb"}
 VOID = {"br", "img", "hr", "meta", "link", "input", "source", "area", "base", "col", "embed", "wbr", "track", "param"}
+# 全ページに出るメニュー・ボタンの文言（本文ではない）
+NOISE = re.compile(r"^(🤖 ?AI相談|💬 ?LINE|📋 ?見積もり|トップへ|TOP注目される3つの特徴|無料で相談する →|お問い合わせ・見積もり →)")
 BLOCK = {"p", "div", "section", "article", "li", "tr", "h1", "h2", "h3", "h4", "h5", "h6", "dt", "dd", "table", "ul", "ol", "dl", "br", "blockquote", "figcaption"}
 
 
 class Extract(HTMLParser):
     def __init__(self):
         super().__init__(convert_charrefs=True)
-        self.stack = []      # 開いている要素ごとに「スキップ中か」
+        self.stack = []      # 開いている要素ごとに (タグ名, スキップするか)
         self.out = []
         self.title = ""
         self.h1 = ""
@@ -32,7 +34,7 @@ class Extract(HTMLParser):
         self.desc = ""
 
     def skipping(self):
-        return any(self.stack)
+        return any(skip for _, skip in self.stack)
 
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
@@ -43,11 +45,11 @@ class Extract(HTMLParser):
                 self.out.append("\n")
             return
         classes = set((a.get("class") or "").split())
-        skip = tag in SKIP_TAGS or bool(classes & SKIP_CLASSES) or (a.get("class") or "").startswith("footer")
-        self.stack.append(skip)
+        skip = tag in SKIP_TAGS or bool(classes & SKIP_CLASSES) or any(c.startswith("footer") for c in classes)
+        self.stack.append((tag, skip))
         if self.skipping():
             return
-        if tag in ("title", "h1"):
+        if tag == "title" or (tag == "h1" and not self.h1):
             self._in = tag
         if tag in BLOCK:
             self.out.append("\n")
@@ -57,13 +59,16 @@ class Extract(HTMLParser):
             self.out.append("- ")
 
     def handle_endtag(self, tag):
-        if tag in VOID or not self.stack:
+        # 閉じタグの省略（<li> 等）や余分な閉じタグがあってもずれないよう、同じ名前の要素まで戻す
+        if tag in VOID or not any(t == tag for t, _ in self.stack):
             return
         if tag in BLOCK and not self.skipping():
             self.out.append("\n")
         if self._in == tag:
             self._in = None
-        self.stack.pop()
+        while self.stack:
+            if self.stack.pop()[0] == tag:
+                break
 
     def handle_data(self, data):
         if self._in == "title":
@@ -78,7 +83,10 @@ class Extract(HTMLParser):
     def text(self):
         t = "".join(self.out)
         lines = [re.sub(r"[ \t　]+", " ", l).strip() for l in t.split("\n")]
-        lines = [l for l in lines if l and l not in ("-", "#", "##", "###", "####")]
+        lines = [l for l in lines if l and l not in ("-", "#", "##", "###", "####") and not NOISE.search(l)]
+        # 他社サイトのURLは載せない（回答の参考リンクは公式サイトだけにする）
+        lines = [re.sub(r"https?://(?!(www\.)?parkhomes-okinawa\.com)\S+", "", l).strip() for l in lines]
+        lines = [re.sub(r"  +", " ", l) for l in lines if l]
         # 直前と同じ行の繰り返しを除く
         out = []
         for l in lines:
@@ -117,10 +125,15 @@ def main():
             continue
         ex = Extract()
         ex.feed(f.read_text(encoding="utf-8"))
+        ex.close()
+        if any(skip for _, skip in ex.stack):
+            print("警告: スキップ中のまま終わった:", unquote(path), file=sys.stderr)
         title = (ex.h1 or ex.title.split(" - ")[0].split("｜")[0].split("|")[0]).strip()
         body = ex.text()
         if ex.desc and ex.desc not in body:
             body = ex.desc + "\n" + body
+        if "</doc>" in body or len(body) < 80:
+            print(f"警告: 本文を確認してください（{len(body)}字）:", unquote(path), file=sys.stderr)
         docs.append({"id": f"S{len(docs) + 1:02d}", "kind": "site", "title": title,
                      "url": SITE + unquote(path), "updated": last_commit_date(root, f), "text": body})
 
